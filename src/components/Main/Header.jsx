@@ -1,22 +1,21 @@
 import React from 'react';
 import styled from 'styled-components';
-//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const TriviaTitle = styled.h1`
     display: flex;
     justify-content: center;
-    font-size: 3.25rem;
+    font-size: 3.5rem;
     font-family: 'Rancho', cursive;
     text-align: center;
-    color: ghostwhite;
-    margin: 0;
-    padding-top: 3%;
+    color: #E55B13;
+    margin: 0 0 .5% 0;
+    padding-top: 2%;
   `
 
 const Header = () => {
   return(
     <div>
-      <TriviaTitle>Flash Trivia😞something-else😞</TriviaTitle>
+      <TriviaTitle>Flash Trivia😁😁</TriviaTitle>
       {/*<FontAwesomeIcon icon="fa-solid fa-circle-question" />*/}
     </div>
   )

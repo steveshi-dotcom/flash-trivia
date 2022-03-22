@@ -1,14 +1,13 @@
 import './App.css';
-import Header from './components/Header'
-import TriviaGame from './components/TriviaGame'
-import MultiplayerVideo from './components/MultiplayerVideo'
+//import HomePage from "./components/Start/HomePage";
 
-function App() {
+
+import Main from './components/Main/Main';
+
+function App() {    /*TODO Resize the elements so that the view on the phone would have the video ono the bottom */
   return (
     <div className={"App"}>
-      <Header />
-      <TriviaGame userDifficulty={'hard'}/>
-      <MultiplayerVideo />
+      <Main userDifficulty={"hard"}/>
     </div>
   );
 }

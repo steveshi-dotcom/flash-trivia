@@ -11,10 +11,15 @@ const tCorrect = 'correct_answer';
 const tIncorrect = 'incorrect_answers';
 
 // Styled Components
-const TriviaGameContainer = styled.div`
+export const TriviaGameContainer = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 20px;
+  width: 60%;
+  height: 100%;
+  border: 4px solid black;
 `;
 
 // Question Queue to track the question when the user starts playing the game.
@@ -24,6 +29,7 @@ const TriviaGame = (props) => {
   const [triviaRound, setTriviaRound] = useState(0);
   const [triviaQueue, setTriviaQueue] = useState([]);
   const [questionNum, setQuestionNum] = useState(1);
+  const [userPoints, setUserPoints] = useState(0);
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
@@ -32,21 +38,17 @@ const TriviaGame = (props) => {
     if (openTrivia_api_data[tResponse] !== 0) { // When the api_call failed to send any question send an error
       alert("Oops 401 Error occurred, please try again later.");
     }
-    /*let questions = [];
-    try {
-      questions = openTrivia_api_data.results;
-    } catch (e) {
-      console.log(e);
-    }*/
-    await setTriviaQueue([...openTrivia_api_data.results]);
+    await setTriviaQueue(openTrivia_api_data.results);
+    /*
     console.log(openTrivia_api_data.results); // Synchronous
     console.log(triviaQueue);                 // TriviaQueue not updated yet??????
+    */
     setLoading(false);
-    //return openTrivia_api_data.results;
   }
+
   // Set the original batch of question, will only get another batch when the previous round is finished
   useEffect(() => {
-    getTriviaQuestion();
+    getTriviaQuestion().then((res) => console.log(res));
     /*const resetTriviaQueue = async () => {
       let questions = [];
       try {
@@ -62,23 +64,29 @@ const TriviaGame = (props) => {
     // eslint-disable-next-line
   }, [triviaRound]);
 
+  function handleResult(e) {
+    if (e === 1) {
+      setUserPoints(userPoints + 2);
+    }
+  }
   return(
-    <div>
+    <TriviaGameContainer>
       {!loading ? (
-        <TriviaGameContainer>
-          <div>{triviaQueue[0]['question']}</div>
+        <div>
           <Question qNum={questionNum}
                     qType={triviaQueue[questionNum][tType]}
                     qQues={triviaQueue[questionNum][tQuestion]}
+                    qUserResult={(e) => handleResult(e)}
           />
           <Answer qCorrect={triviaQueue[questionNum][tCorrect]}
                   qIncorrect={triviaQueue[questionNum][tIncorrect]}
+
           />
-        </TriviaGameContainer>
+        </div>
       ) : (
         <div id={"question-loading"}>This WebPage is currently high, come back later</div>
       )}
-    </div>
+    </TriviaGameContainer>
   )
 }
 export default TriviaGame;
