@@ -17,36 +17,17 @@ const TriviaGameContainer = styled.div`
   gap: 20px;
 `;
 
-/**
- * Question Queue to track the question when the user starts playing the game.
- * @param props.userDifficulty
- * @returns {JSX.Element}
- * @constructor
- */
+// Question Queue to track the question when the user starts playing the game.
 const TriviaGame = (props) => {
   const [userDifficulty, setUserDifficulty] = useState(props.userDifficulty);
   const [questionNum, setQuestionNum] = useState(0);
   const [triviaQueue, setTriviaQueue] = useState([]);
 
-  /**
-   * Async function to call 50 trivia question from OpenTrivia API, a new batch of question is given for every call
-   * @returns {Promise<*>}
-   */
+  // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
-    let openTrivia_api_call;
-    switch (userDifficulty) {
-      case 'easy':
-        openTrivia_api_call = await fetch(`https://opentdb.com/api.php?amount=50&difficulty=easy&type=multiple`);
-        break;
-      case 'hard':
-        openTrivia_api_call = await fetch(`https://opentdb.com/api.php?amount=50&difficulty=hard&type=multiple`);
-        break;
-      default:
-        openTrivia_api_call = await fetch(`https://opentdb.com/api.php?amount=50&difficulty=medium&type=multiple`);
-        break;
-    }
+    const openTrivia_api_call = await fetch(`https://opentdb.com/api.php?amount=50&difficulty=${userDifficulty}&type=multiple`)
     const openTrivia_api_data = await openTrivia_api_call.json();
-    if (openTrivia_api_data[tResponse] !== 0) {
+    if (openTrivia_api_data[tResponse] !== 0) { // When the api_call failed to send any question send an error
       alert("Oops 401 Error occurred, please try again later.")
     }
     return openTrivia_api_data.results;
@@ -54,26 +35,19 @@ const TriviaGame = (props) => {
 
   // Set the original batch of question, will only get another batch when the previous round is finished
   useEffect(() => {
-    // ###i see multiple async coding styles here, Promise&then, await/async
-    // just an async "wrapper" but it's necessary, feel free to rename.
-    // In VSCode you can double-click var/function names and press F2 on window to refactor and rename all calls of that var/func
     const resetTriviaQueue = async () => {
-      const questions = await getTriviaQuestion(); // so this is where await/async can get kinda tricky
-      
+      let questions = [];
+      try {
+        questions = await getTriviaQuestion();
+      } catch (e) {
+        console.log(e);
+      }
       setTriviaQueue(questions);
-      triviaQueue.map((val, ind) => console.log(`question #${ind+1} --> ${val['question']}`)) // can you try this and screenshot
+      triviaQueue.map((val, ind) => console.log(`question #${ind+1} --> ${val['question']}`));
     }
-    resetTriviaQueue().then((result) => console.log("Trivia Batch Finished."));
-    // .then((value) => {
-    //   setTriviaQueue(value);
-    // })
+    resetTriviaQueue();
     // eslint-disable-next-line
   }, []);
-
-  // function printTrivia() {
-  //   triviaQueue.map((curr, idx) => console.log("question#" + (idx + 1) + "-->" + curr['question']));
-  // }
-  // printTrivia();
 
   return(
     <div>
