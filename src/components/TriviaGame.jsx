@@ -47,7 +47,7 @@ const TriviaGame = (props) => {
     }
     const openTrivia_api_data = await openTrivia_api_call.json();
     if (openTrivia_api_data[tResponse] !== 0) {
-      alert("Oops 401 Error, come back later")
+      alert("Oops 401 Error occurred, please try again later.")
     }
     return openTrivia_api_data.results;
   }
@@ -55,18 +55,15 @@ const TriviaGame = (props) => {
   // Set the original batch of question, will only get another batch when the previous round is finished
   useEffect(() => {
     // ###i see multiple async coding styles here, Promise&then, await/async
-
-    // just an async "wrapper" but it's necessary, feel free to rename. In VScode you can double click var/funct names and press F2 on windows to refactor and rename all calls of that var/func
-    const doThings = async () => {
+    // just an async "wrapper" but it's necessary, feel free to rename.
+    // In VSCode you can double-click var/function names and press F2 on window to refactor and rename all calls of that var/func
+    const resetTriviaQueue = async () => {
       const questions = await getTriviaQuestion(); // so this is where await/async can get kinda tricky
       
       setTriviaQueue(questions);
       triviaQueue.map((val, ind) => console.log(`question #${ind+1} --> ${val['question']}`)) // can you try this and screenshot
-
     }
-  
-    doThings();
-    
+    resetTriviaQueue().then((result) => console.log("Trivia Batch Finished."));
     // .then((value) => {
     //   setTriviaQueue(value);
     // })
@@ -80,7 +77,7 @@ const TriviaGame = (props) => {
 
   return(
     <div>
-        <TriviaGameContainer>
+      <TriviaGameContainer>
           <Question currType={triviaQueue[tType]} currQuestion={triviaQueue[tQuestion]}/>
           <Answer currCorrect={triviaQueue[tCorrect]} currIncorrect={triviaQueue[tIncorrect]} />
         </TriviaGameContainer>

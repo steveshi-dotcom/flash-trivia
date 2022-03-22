@@ -15,7 +15,7 @@ const TriviaQuestion = styled.h1`
  */
 const Question = (props) => {
   return(
-    <TriviaQuestion>Working ON This</TriviaQuestion>
+    <TriviaQuestion>{props.currQuestion}</TriviaQuestion>
   )
 }
 
