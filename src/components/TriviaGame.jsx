@@ -19,23 +19,35 @@ const TriviaGameContainer = styled.div`
 
 // Question Queue to track the question when the user starts playing the game.
 const TriviaGame = (props) => {
+  const [loading, setLoading] = useState(true);
   const [userDifficulty, setUserDifficulty] = useState(props.userDifficulty);
-  const [questionNum, setQuestionNum] = useState(0);
+  const [triviaRound, setTriviaRound] = useState(0);
   const [triviaQueue, setTriviaQueue] = useState([]);
+  const [questionNum, setQuestionNum] = useState(1);
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
     const openTrivia_api_call = await fetch(`https://opentdb.com/api.php?amount=50&difficulty=${userDifficulty}&type=multiple`)
     const openTrivia_api_data = await openTrivia_api_call.json();
     if (openTrivia_api_data[tResponse] !== 0) { // When the api_call failed to send any question send an error
-      alert("Oops 401 Error occurred, please try again later.")
+      alert("Oops 401 Error occurred, please try again later.");
     }
-    return openTrivia_api_data.results;
+    /*let questions = [];
+    try {
+      questions = openTrivia_api_data.results;
+    } catch (e) {
+      console.log(e);
+    }*/
+    await setTriviaQueue([...openTrivia_api_data.results]);
+    console.log(openTrivia_api_data.results); // Synchronous
+    console.log(triviaQueue);                 // TriviaQueue not updated yet??????
+    setLoading(false);
+    //return openTrivia_api_data.results;
   }
-
   // Set the original batch of question, will only get another batch when the previous round is finished
   useEffect(() => {
-    const resetTriviaQueue = async () => {
+    getTriviaQuestion();
+    /*const resetTriviaQueue = async () => {
       let questions = [];
       try {
         questions = await getTriviaQuestion();
@@ -43,20 +55,30 @@ const TriviaGame = (props) => {
         console.log(e);
       }
       setTriviaQueue(questions);
-      triviaQueue.map((val, ind) => console.log(`question #${ind+1} --> ${val['question']}`));
-    }
-    resetTriviaQueue();
+      setLoading(false);
+      console.log(triviaQueue)
+      //triviaQueue.map((val, ind) => console.log(`question #${ind+1} --> ${val['question']}`));
+    }*/
     // eslint-disable-next-line
-  }, []);
+  }, [triviaRound]);
 
   return(
     <div>
-      <TriviaGameContainer>
-          <Question currType={triviaQueue[tType]} currQuestion={triviaQueue[tQuestion]}/>
-          <Answer currCorrect={triviaQueue[tCorrect]} currIncorrect={triviaQueue[tIncorrect]} />
+      {!loading ? (
+        <TriviaGameContainer>
+          <div>{triviaQueue[0]['question']}</div>
+          <Question qNum={questionNum}
+                    qType={triviaQueue[questionNum][tType]}
+                    qQues={triviaQueue[questionNum][tQuestion]}
+          />
+          <Answer qCorrect={triviaQueue[questionNum][tCorrect]}
+                  qIncorrect={triviaQueue[questionNum][tIncorrect]}
+          />
         </TriviaGameContainer>
+      ) : (
+        <div id={"question-loading"}>This WebPage is currently high, come back later</div>
+      )}
     </div>
-
   )
 }
 export default TriviaGame;
