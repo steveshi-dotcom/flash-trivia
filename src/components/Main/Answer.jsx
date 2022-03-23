@@ -9,8 +9,8 @@ const Choice = styled.button`
   font-size: 1.25em;
   font-weight: bold;
   color: white;
-  width: 20.5vw;
-  height: 10vh;
+  width: 22vw;
+  height: 15vh;
   padding: 2%;
   border-radius: 1rem;
   margin: .4% 1.5%;

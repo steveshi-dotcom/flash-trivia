@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+// styled components
 const TriviaTitle = styled.h1`
     display: flex;
     justify-content: center;
@@ -9,9 +10,10 @@ const TriviaTitle = styled.h1`
     text-align: center;
     color: #E55B13;
     margin: 0 0 .5% 0;
-    padding-top: 1%;
+    padding-top: .25%;
   `
 
+// Header as (Flash Trivia) -> ? icon??
 const Header = () => {
   return(
     <div>

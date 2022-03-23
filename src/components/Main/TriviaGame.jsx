@@ -1,10 +1,10 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
+import TriviaGameLoading from "./TriviaGameLoading";
 import Question from './Question';
 import Answer from './Answer';
 import rightAnswer from './imgs/rightMeme.jpeg';
 import wrongAnswer from './imgs/wrongMeme.jpeg';
-import {PupHolder} from "./Question";
 
 // Properties of each question from OpenTrivia API
 const tResponse = 'response_code';  // Response of API request
@@ -19,6 +19,7 @@ export const TriviaGameContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   width: 60%;
   height: 100%;
   background: #FFC55C;
@@ -28,7 +29,7 @@ export const TriviaGameContainer = styled.div`
 
 // Question Queue to track the question when the user starts playing the game.
 const TriviaGame = (props) => {
-  // States of the TriviaGame
+  // States of the TriviaGame Function
   const [loading, setLoading] = useState(true);
   const [userDifficulty, setUserDifficulty] = useState(props.userDifficulty);
   const [triviaRound, setTriviaRound] = useState(0);
@@ -36,6 +37,7 @@ const TriviaGame = (props) => {
   const [questionNum, setQuestionNum] = useState(0);
   const [userPoints, setUserPoints] = useState(0);
   const [memeTime, setMemeTime] = useState({"display": false});
+  const runTimer = useRef(questionNum);
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
@@ -45,12 +47,17 @@ const TriviaGame = (props) => {
       alert("Oops 401 Error occurred, please try again later.");
     }
     await setTriviaQueue(openTrivia_api_data.results);
-    setLoading(false);
+
+    // Load up the rendering of the question after triviaQueues finish up fetching the question
+    setTimeout(() => {
+      setLoading(false);
+    }, 1); // Allow the user to look at the puppy pic a bit longer :)
   }
 
   // New round of trivia game, only started on the first round or every new round
   useEffect(() => {
-    getTriviaQuestion().then((res) => console.log());
+    setUserDifficulty(props.userDifficulty);
+    getTriviaQuestion().then((res) => console.log("Bleep Beep Bop, Questions processed"));
     setQuestionNum(0);
     setUserPoints(0);
     // eslint-disable-next-line
@@ -58,12 +65,14 @@ const TriviaGame = (props) => {
 
   // Add up points for the user, and move on to the next question, go to results when finished
   const handlePoints = (e) => {
+    console.log(`${e} was established`);
     if (e === 1) {
       setUserPoints(userPoints + 2);
       setMemeTime({"display": true, "type": 1, "unknownMeme": sendUserTheirGift(1)})
     } else {
       setMemeTime({"display": true, "type": 0,  "unknownMeme": sendUserTheirGift(0)})
     }
+    // Consider whether to move on to the next question or that finish up the game when it reaches the maximum
     if (questionNum < 49) {
       setQuestionNum(questionNum + 1);
     } else {
@@ -71,6 +80,7 @@ const TriviaGame = (props) => {
     }
   }
 
+  // Send the user a meme of the result of what they picked (right/wrong), option to move on or a timer??
   const sendUserTheirGift = async(e) => {
     if (e === 1) {
       return <img src={rightAnswer} alt={"right-answer"} />;
@@ -87,6 +97,7 @@ const TriviaGame = (props) => {
     setTriviaRound(triviaRound + 1);
     /** TODO Go to result page, leaving the main page*/
   }
+
   // Render Trivia Game (Left Section of Main)
   return(
     <TriviaGameContainer>
@@ -95,6 +106,8 @@ const TriviaGame = (props) => {
           <Question qNum={questionNum}
                     qType={triviaQueue[questionNum][tType]}
                     qQues={triviaQueue[questionNum][tQuestion]}
+                    qResults={(e) => handlePoints(e)}
+                    qRunTimer={runTimer}
           />
           <Answer qCorrect={triviaQueue[questionNum][tCorrect]}
                   qIncorrect={triviaQueue[questionNum][tIncorrect]}
@@ -102,7 +115,7 @@ const TriviaGame = (props) => {
           />
         </div>
       ) : (
-        <div id={"question-loading"}>This WebPage is currently high, come back later</div>
+        <TriviaGameLoading />
       )}
     </TriviaGameContainer>
   )
