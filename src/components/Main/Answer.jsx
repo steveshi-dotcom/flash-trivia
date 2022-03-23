@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import he from 'he';
 
 // Style Components
 const ChoiceContainer = styled.div`
@@ -52,10 +53,10 @@ const Answer = (props) => {
   }
   return(
     <ChoiceContainer>
-      <ChoiceOne value={triviaOptions[0]} onClick={(e) => props.qResult(checkAnswer(e))}>{triviaOptions[0]}</ChoiceOne>
-      <ChoiceTwo value={triviaOptions[1]} onClick={(e) => props.qResult(checkAnswer(e))}>{triviaOptions[1]}</ChoiceTwo>
-      <ChoiceThree value={triviaOptions[2]} onClick={(e) => props.qResult(checkAnswer(e))}>{triviaOptions[2]}</ChoiceThree>
-      <ChoiceFour value={triviaOptions[3]} onClick={(e) => props.qResult(checkAnswer(e))}>{triviaOptions[3]}</ChoiceFour>
+      <ChoiceOne value={triviaOptions[0]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceOne>
+      <ChoiceTwo value={triviaOptions[1]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceTwo>
+      <ChoiceThree value={triviaOptions[2]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceThree>
+      <ChoiceFour value={triviaOptions[3]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceFour>
     </ChoiceContainer>
   )
 }

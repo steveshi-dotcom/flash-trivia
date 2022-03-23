@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
-import TriviaGameLoading from "./TriviaGameLoading";
+import GameLoading from "./GameLoading";
 import Question from './Question';
 import Answer from './Answer';
 import rightAnswer from './imgs/rightMeme.jpeg';
@@ -23,7 +23,7 @@ export const TriviaGameContainer = styled.div`
   width: 60%;
   height: 100%;
   background: #FFC55C;
-  border: 4px solid black;
+  border: 1px solid black;
   padding: 0 0 5% 0;
 `
 
@@ -37,7 +37,7 @@ const TriviaGame = (props) => {
   const [questionNum, setQuestionNum] = useState(0);
   const [userPoints, setUserPoints] = useState(0);
   const [memeTime, setMemeTime] = useState({"display": false});
-  const runTimer = useRef(questionNum);
+  const runTimer = useRef(0);
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
@@ -60,16 +60,18 @@ const TriviaGame = (props) => {
     getTriviaQuestion().then((res) => console.log("Bleep Beep Bop, Questions processed"));
     setQuestionNum(0);
     setUserPoints(0);
+    runTimer.current = 0;
     // eslint-disable-next-line
   }, [triviaRound]);
 
   // Add up points for the user, and move on to the next question, go to results when finished
   const handlePoints = (e) => {
-    console.log(`${e} was established`);
     if (e === 1) {
+      console.log("right answer");
       setUserPoints(userPoints + 2);
       setMemeTime({"display": true, "type": 1, "unknownMeme": sendUserTheirGift(1)})
     } else {
+      console.log("wrong answer");
       setMemeTime({"display": true, "type": 0,  "unknownMeme": sendUserTheirGift(0)})
     }
     // Consider whether to move on to the next question or that finish up the game when it reaches the maximum
@@ -115,7 +117,7 @@ const TriviaGame = (props) => {
           />
         </div>
       ) : (
-        <TriviaGameLoading />
+        <GameLoading />
       )}
     </TriviaGameContainer>
   )

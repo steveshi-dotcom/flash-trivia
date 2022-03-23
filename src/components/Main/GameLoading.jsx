@@ -13,7 +13,7 @@ const LoadingText = styled.h1`
 `
 
 // Loading page when the page is waiting to fetch the data from OpenTrivia, a puppy with text wait patiently...
-const TriviaGameLoading = () => {
+const GameLoading = () => {
   return(
     <div>
       <LoadingContainer src={puppyWaitEye}/>
@@ -21,4 +21,4 @@ const TriviaGameLoading = () => {
     </div>
   )
 }
-export default TriviaGameLoading;
+export default GameLoading;
