@@ -1,6 +1,7 @@
 import React from 'react';
 
-/** TODO Make three person game */
+
+// Video part of Multiplayer component where the user will be able to communicate with four other player
 const MultiplayerVideo = () => {
   return(
     <div>

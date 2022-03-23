@@ -2,10 +2,11 @@ import React from 'react';
 
 
 
+// Chat part of Multiplayer component where the user will be able to communicate with four other player
 const MultiplayerChat = () => {
   return(
     <div>
-      HellO
+      Hello
     </div>
   )
 }
