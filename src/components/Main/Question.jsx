@@ -41,6 +41,7 @@ const Question = (props) => {
   const currQuestion = he.decode(props.qQues);
   const [timeLeft, setTimeLeft] = useState(60);
 
+  // Side effect of counting down the timer unless it is picked, send a wrong answer result when user did not pick any
   useEffect(() => {
     if (props.qRunTimer.current !== props.qNum) {
       setTimeLeft(60);
@@ -58,6 +59,7 @@ const Question = (props) => {
     }
   }, [timeLeft]);
 
+  // Render the question as well as the timer to the right of it
   return(
     <div>
         <QuestionContainer>

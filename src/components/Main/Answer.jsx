@@ -43,6 +43,7 @@ const Answer = (props) => {
     })
     .map(({curr}) => curr);
 
+  // Check to see if the answer is correct and send the result back to TriviaGame component to handle points
   const checkAnswer = (e) => {
     const rightAnswer = e.target.value === props.qCorrect;
     if (rightAnswer) {
@@ -51,12 +52,14 @@ const Answer = (props) => {
       return 0;
     }
   }
+
+  // Render the four different answer choices
   return(
     <ChoiceContainer>
       <ChoiceOne value={triviaOptions[0]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceOne>
-      <ChoiceTwo value={triviaOptions[1]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceTwo>
-      <ChoiceThree value={triviaOptions[2]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceThree>
-      <ChoiceFour value={triviaOptions[3]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceFour>
+      <ChoiceTwo value={triviaOptions[1]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[1])}</ChoiceTwo>
+      <ChoiceThree value={triviaOptions[2]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[2])}</ChoiceThree>
+      <ChoiceFour value={triviaOptions[3]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[3])}</ChoiceFour>
     </ChoiceContainer>
   )
 }
