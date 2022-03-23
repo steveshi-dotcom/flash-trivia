@@ -2,25 +2,24 @@ import React from 'react';
 import styled from 'styled-components';
 
 // Style Components
-/*const ChoiceContainer = styled.div`
-  display: grid;
-`*/
-const Choice = styled.button`
-  font-size: 1.5rem;
+const ChoiceContainer = styled.div`
   justify-content: center;
-  align-items: center;
-  color: black;
-  width: 20vw;
+`
+const Choice = styled.button`
+  font-size: 1.25em;
+  font-weight: bold;
+  color: white;
+  width: 20.5vw;
   height: 10vh;
   padding: 2%;
   border-radius: 1rem;
-  margin: .4% 1%;
+  margin: .4% 1.5%;
 `
 const ChoiceOne = styled(Choice)`
   background-color: blue;
 `
 const ChoiceTwo = styled(Choice)`
-  background-color: yellow;
+  background-color: purple;
 `
 const ChoiceThree = styled(Choice)`
   background-color: green;
@@ -28,6 +27,7 @@ const ChoiceThree = styled(Choice)`
 const ChoiceFour = styled(Choice)`
   background-color: red;
 `
+
 // Current choice for the question displayed
 // props:: qCorrect, qIncorrect
 const Answer = (props) => {
@@ -41,37 +41,22 @@ const Answer = (props) => {
       return p.order - q.order;
     })
     .map(({curr}) => curr);
-  console.log(triviaOptions);
-  // Check the answer that the user picked
+
   const checkAnswer = (e) => {
-    console.log(e.target.value);
-    if (e.target.value === props.qCorrect) {
-      console.log("Correct Answer");
+    const rightAnswer = e.target.value === props.qCorrect;
+    if (rightAnswer) {
+      return 1;
     } else {
-      console.log("Wrong Answer")
+      return 0;
     }
   }
-
-  /*const returnQuestionOption = (curr, ind) => {
-    switch (ind) {
-      case 0:
-        return <ChoiceOne key={ind} value={curr} onClick={(e) => checkAnswer(e)}>{curr}</ChoiceOne>
-      case 1:
-        return <ChoiceTwo key={ind} value={curr} onClick={(e) => checkAnswer(e)}>{curr}</ChoiceTwo>
-      case 2:
-        return <ChoiceThree key={ind} value={curr} onClick={(e) => checkAnswer(e)}>{curr}</ChoiceThree>
-      default:
-        return <ChoiceFour key={ind} value={curr} onClick={(e) => checkAnswer(e)}>{curr}</ChoiceFour>
-    }
-  }*/
   return(
-    <div>
-      <ChoiceOne value={triviaOptions[0]} onClick={(e) => checkAnswer(e)}>{triviaOptions[0]}</ChoiceOne>
-      <ChoiceTwo value={triviaOptions[1]} onClick={(e) => checkAnswer(e)}>{triviaOptions[1]}</ChoiceTwo>
-      <ChoiceThree value={triviaOptions[2]} onClick={(e) => checkAnswer(e)}>{triviaOptions[2]}</ChoiceThree>
-      <ChoiceFour value={triviaOptions[3]} onClick={(e) => checkAnswer(e)}>{triviaOptions[3]}</ChoiceFour>
-      {/*triviaOptions.map((curr, ind) => returnQuestionOption(curr, ind))*/}
-    </div>
+    <ChoiceContainer>
+      <ChoiceOne value={triviaOptions[0]} onClick={(e) => props.qResult(checkAnswer(e))}>{triviaOptions[0]}</ChoiceOne>
+      <ChoiceTwo value={triviaOptions[1]} onClick={(e) => props.qResult(checkAnswer(e))}>{triviaOptions[1]}</ChoiceTwo>
+      <ChoiceThree value={triviaOptions[2]} onClick={(e) => props.qResult(checkAnswer(e))}>{triviaOptions[2]}</ChoiceThree>
+      <ChoiceFour value={triviaOptions[3]} onClick={(e) => props.qResult(checkAnswer(e))}>{triviaOptions[3]}</ChoiceFour>
+    </ChoiceContainer>
   )
 }
 

@@ -9,7 +9,7 @@ const TriviaTitle = styled.h1`
     text-align: center;
     color: #E55B13;
     margin: 0 0 .5% 0;
-    padding-top: 2%;
+    padding-top: 1%;
   `
 
 const Header = () => {
