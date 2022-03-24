@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components';
 import socketIOClient from 'socket.io-client';
-const socket = socketIOClient("http://localhost:8000", {secure: false})
+const socket = socketIOClient("http://localhost:3001", {secure: false});
 
 // styled components
 const ChatRootContainer = styled.div` // Root of the Chat rendering where clients send msg to communicate with others
@@ -95,7 +95,7 @@ const MultiplayerChat = () => {
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log(socket.id);
+      console.log("Connecting");
     });
   })
 
