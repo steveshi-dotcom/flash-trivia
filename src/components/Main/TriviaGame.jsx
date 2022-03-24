@@ -22,8 +22,7 @@ export const TriviaGameContainer = styled.div`
   text-align: center;
   width: 60%;
   height: 100%;
-  background: #FFC55C;
-  border: 1px solid black;
+  background: mediumpurple;
   padding: 0 0 5% 0;
 `
 

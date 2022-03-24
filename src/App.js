@@ -15,7 +15,7 @@ function App() {    /*TODO Resize the elements so that the view on the phone wou
 
   return (
     <div className="App">
-      <Router>
+      <Router basename={"/flash-trivia"}>
           <Routes>
             <Route path={homeUrl} element={<HomePage />}/>
             <Route path={mainUrl} element={<Main userDifficulty={"hard"}/>}/>
