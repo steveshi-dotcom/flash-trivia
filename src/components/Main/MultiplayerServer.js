@@ -6,6 +6,11 @@ const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server);
 
+/*
+cd src/components/Main
+nodemon MultiplayerServer.js
+ */
+
 app.get('/', (req, res) => {
   res.send('<h1>Hello world</h1>')
 });

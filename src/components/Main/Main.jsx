@@ -10,6 +10,7 @@ const MainContainer = styled.div`
   display: flex;
   flex-direction: row;
 `
+
 const Main = (props) => {
   return(
     <div>
