@@ -1,20 +1,34 @@
-// Boiler
-const app = require('express');
-const server = require('http').createServer(app);
+const express = require('express');
+const app = express();
+const http = require('http');
+const cors = require('cors');
 const { Server } = require('socket.io');
-const io = new Server(server);
+app.use(cors());
 
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3001",
+    methods: ["GET", "POST"],
+  }
+});
 /*
 cd src/components/Main
 nodemon MultiplayerServer.js
  */
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello world</h1>')
+const users = {};
+
+io.on('connection', (socket) => {
+  console.log(`A connected user: ${socket.id}`);
+
+  socket.on('newClientMsg', (clientMsg) => {
+    console.log(`${socket.id} has emitted "${clientMsg}"`);
+    io.emit('newClientMsg', clientMsg);
+  });
 });
 
-io.on('connection', () => {
-  console.log("Socket connected, listening on the server currently");
-});
-
-server.listen(3000, () => console.log("Listening on the server"));
+// Listen on the port
+server.listen(3001, () => {
+  console.log("Listening on the server.");
+})

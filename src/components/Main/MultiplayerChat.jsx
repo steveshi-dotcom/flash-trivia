@@ -1,7 +1,9 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components';
 import socketIOClient from 'socket.io-client';
+const socket = socketIOClient("http://localhost:8000", {secure: false})
 
+// styled components
 const ChatRootContainer = styled.div` // Root of the Chat rendering where clients send msg to communicate with others
   background-color: black;
   color: white;
@@ -29,8 +31,8 @@ const IndividualChat = styled.p` // Individual chat style components
 const IndividualChatFirstName = styled.span`
   font-weight: bold;
   display: flex;
-  width: 3vw;
-  margin-right: 2vw;
+  width: 2.5vw;
+  margin-right: 1.5vw;
   text-align: left;
 `
 const IndividualChatMsg = styled.span`
@@ -78,39 +80,24 @@ const MultiplayerChat = () => {
    * }
    */
   //const [chatHistory, setChatHistory] = useState();
-
-  const newChat = useRef('');
-  const [chatHistory, setChatHistory] = useState(
-    [{
-        "userId": 1234,
-        "userName": "Jonathan",
-        "userMessage": "Grammarly Checks Your Writing For All Kinds Of Potential Mistakes & Eliminates Them. Compose Credible, Mistake-free Writing With Real Time Suggestions As You Type."
-      },
-      {
-        "userId": 1235,
-        "userName": "Steven",
-        "userMessage": "What was the last Marx Brothers film to feature Zeppo?What was the last Marx Brothers film to feature Zeppo?"
-      },
-      {
-        "userId": 1236,
-        "userName": "Bobby",
-        "userMessage": "What was the code name given to Sonic the Hedgehog 4 during its development?"
-      }]
-    );
-
-  const changeNewChat = (e) => {
-    newChat.current = e.target.value;
-  }
+  const [newChat, setNewChat] = useState('');
+  const [chatHistory, setChatHistory] = useState([]);
 
   const postNewChat = () => {
-    if (newChat.current.length === 0) {
+    if (newChat.length === 0) {
       setChatHistory([...chatHistory, {"userId": 1236, "userName": "John", "userMessage": "(◔_◔)"}]);
     } else {
       console.log("Hello");
-      setChatHistory([...chatHistory, {"userId": 1236, "userName": "John", "userMessage": newChat.current}]);
+      setChatHistory([...chatHistory, {"userId": 1236, "userName": "John", "userMessage": newChat}]);
     }
-    newChat.current = '';
+    setNewChat('');
   }
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log(socket.id);
+    });
+  })
 
   return(
     <ChatRootContainer>
@@ -123,7 +110,7 @@ const MultiplayerChat = () => {
         })}
       </ChatHistoryContainer>
       <InsertChatContainer>
-        <InsertChatInput type={"text"} onChange={(e) => changeNewChat(e)} placeHolder={"Post new message here"} />
+        <InsertChatInput type={"text"} onChange={(e) => setNewChat(e.target.value)} value={newChat}/>
         <InsertChatBtn onClick={postNewChat}>post</InsertChatBtn>
       </InsertChatContainer>
     </ChatRootContainer>
