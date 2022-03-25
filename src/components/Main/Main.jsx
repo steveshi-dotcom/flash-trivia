@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Header from "./Header";
 import TriviaGame from "./TriviaGame";
 import TriviaMultiplayer from "./TriviaMultiplayer";
 
@@ -9,12 +8,12 @@ import TriviaMultiplayer from "./TriviaMultiplayer";
 const MainContainer = styled.div`
   display: flex;
   flex-direction: row;
+  margin-top: 10vh;
 `
 
 const Main = (props) => {
   return(
     <div>
-      <Header />
       <MainContainer>
         <TriviaGame userDifficulty={props.userDifficulty}/>
         <TriviaMultiplayer />

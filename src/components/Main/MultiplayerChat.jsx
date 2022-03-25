@@ -1,12 +1,13 @@
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components';
+
 import socketIOClient from 'socket.io-client';
-const socket = socketIOClient("http://localhost:3001", {secure: false});
+const socket = socketIOClient("http://localhost:3002", {secure: false});
 
 // styled components
 const ChatRootContainer = styled.div` // Root of the Chat rendering where clients send msg to communicate with others
   background-color: black;
-  color: white;
+  color: black;
   font-size: 1em;
   font-family: Arial,serif;
   display: flex;
@@ -16,11 +17,11 @@ const ChatRootContainer = styled.div` // Root of the Chat rendering where client
 const ChatHistoryContainer = styled.div` // History of past chat
   width: 40.33vw;
   height: 28.5vh;
-  overflow: auto;
   margin-right: auto;
   padding: 3px 0 0 3px;
+  overflow-x: hidden;
+  overflow-y: auto;
 `
-
 // Individual Message from each player
 const IndividualChat = styled.p` // Individual chat style components
   display: flex;

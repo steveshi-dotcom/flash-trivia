@@ -1,5 +1,5 @@
 import './App.css';
-import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
+import {BrowserRouter, Routes, Route} from "react-router-dom";
 
 import HomePage from "./components/Start/HomePage";
 import Main from './components/Main/Main';
@@ -7,7 +7,7 @@ import Result from './components/Result/Result';
 
 // Urls routes
 export const homeUrl = "/home";
-export const mainUrl = "/game";
+export const mainUrl = "/main";
 export const resultUrl = "/result";
 
 function App() {    /*TODO Resize the elements so that the view on the phone would have the video ono the bottom */
@@ -15,13 +15,19 @@ function App() {    /*TODO Resize the elements so that the view on the phone wou
 
   return (
     <div className="App">
-      <Router basename={"/flash-trivia"}>
+      <BrowserRouter>
           <Routes>
-            <Route path={homeUrl} element={<HomePage />}/>
-            <Route path={mainUrl} element={<Main userDifficulty={"hard"}/>}/>
-            <Route path={resultUrl} element={<Result />}/>
+            <Route path={homeUrl} element={<HomePage />} />
+            <Route path={mainUrl} element={<Main userDifficulty={"hard"}/>} />
+            <Route path={resultUrl} element={<Result />} />
+            <Route path={"*"} element={
+              <main style={{padding: "1rem"}}>
+                <h1>🍬👽  ⓗ𝐄𝕃𝐥𝐎  🐳✋</h1>
+                <h1>There is nothing in this page</h1>
+              </main>
+            } />
           </Routes>
-      </Router>
+      </BrowserRouter>
     </div>
     /*<div className={"App"}>
       <Main userDifficulty={"hard"}/>

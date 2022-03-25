@@ -24,8 +24,13 @@ from origin 'http://localhost:3000' has been blocked by CORS policy: The 'Access
 header has a value 'http://localhost:3001' that is not equal to the supplied origin.
 polling-xhr.js:157
 GET http://localhost:3001/socket.io/?EIO=4&transport=polling&t=N-zpZXb net::ERR_FAILED 200
+
+
+
+polling-xhr.js:157 GET http://localhost:3001/socket.io/?EIO=4&transport=polling&t=N--qOLZ net::ERR_CONNECTION_TIMED_OUT?????
  */
 
+const port = 3002;
 const users = {};
 
 io.on('connection', (socket) => {
@@ -43,6 +48,6 @@ io.on('connection', (socket) => {
 });
 
 // Listen on the port
-server.listen(3001, () => {
+server.listen(port, () => {
   console.log("Listening on the server.");
-})
+});
