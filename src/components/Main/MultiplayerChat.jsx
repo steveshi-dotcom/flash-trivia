@@ -73,16 +73,6 @@ const InsertChatBtn = styled.button` // Send a event to add chat to ChatHistoryC
 `
 
 // Const representing an {}'s property to send to socket server for each player
-export const s_userId = 'userId';
-export const s_userName = 'userName';
-export const s_userRoom = 'userRoom';
-export const s_userMsg = 'userMessage';
-
-// Const representing sockets events that will be emitted for the server
-export const pl_connect = 'player_connected';
-export const pl_disconnect = 'player_disconnected';
-export const pl_newMessage = 'player_sent_message';
-
 
 // Chat part of Multiplayer component where the client will be able to communicate with four other player
 const MultiplayerChat = (props) => {
@@ -97,41 +87,51 @@ const MultiplayerChat = (props) => {
   const [userMsg, setUserMsg] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
 
+
   // () Obtain the player information from the url such as: http://localhost:3000/game/?name=steve&room=1234
+  // Effect() After a player joined, get their information and inform other players in the chat room
   const playerLocation = useLocation();
-  const setPlayerInformation = () => {
+  useEffect(() => {
     const playerInput = qs.parse(playerLocation.search.slice(1)); // playerLocation.search: ?name=steve&room=1234
     setUserName(playerInput[searchNameParam]);
     setUserRoom(playerInput[searchRoomParam]);
-  }
+    socket.emit("join-game", {
+      userId: userId,
+      userName: playerInput[searchNameParam],
+      userRoom: playerInput[searchRoomParam],
+      userMsg: "I have joined the room. ヾ(・ﻌ・)ゞ"
+    });
 
-  // () inform a new player has joined in the chat room
-  const informNewPlayer = (newPlayerData) => {
-    //setChatHistory([...chatHistory, newPlayerData]);
-    console.log("joining us today:");
-    console.log(newPlayerData);
-  }
+    // Inform other players in the room that a new player has joined
+    socket.on("new-player", (newPlayerData) => {
+      setChatHistory([...chatHistory, newPlayerData])
+    });
+  }, [playerLocation]);
+
 
   // () post the new chat into the chatHistory and emitting to all players within the room
   const postNewChat = () => {
-    if (userMsg.length === 0) {
-      setChatHistory([...chatHistory, {"userId": 1236, "userName": "John", "userMessage": "(◔_◔)"}]);
-    } else {
-      console.log("Hello");
-      setChatHistory([...chatHistory, {"userId": 1236, "userName": "John", "userMessage": userMsg}]);
+      const postedChat = {
+      userId: userId,
+      userName: userName,
+      userMsg: "(◔_◔)"
+    };
+    if (userMsg.length !== 0) {
+      postedChat['userMsg'] = userMsg;
     }
+    console.log(postedChat);
+    socket.emit("chat-message", postedChat);
+    socket.on("chat-message", (incomingChat) => {
+      const newIndividualChat = { userName: incomingChat['userName'], userMsg: incomingChat['userMsg'] }
+      console.log(incomingChat);
+      const chatHistoryCopy = chatHistory;
+      chatHistoryCopy.push(newIndividualChat);
+      console.log(chatHistoryCopy);
+      setChatHistory([...chatHistoryCopy]);
+    });
     setUserMsg('');
   }
 
-  // Effect() After a player joined, get their information and inform other players in the chat room
-  useEffect(() => {
-    setPlayerInformation();
-    const newPlayerData = {s_userId: userId, s_userName: userName, s_userRoom: userRoom};
-    socket.emit(pl_connect, newPlayerData);
-    socket.on(pl_connect, (newPlayerData) => {
-      informNewPlayer(newPlayerData);
-    });
-  }, [userName, userRoom]);
 
 
   // Render the lower right chat function on main page
@@ -140,8 +140,8 @@ const MultiplayerChat = (props) => {
       <ChatHistoryContainer>
         {chatHistory.map((curr, ind) => {
           return <IndividualChat key={ind}>
-            <IndividualChatFirstName>{curr.userName}:</IndividualChatFirstName>
-            <IndividualChatMsg>{curr.userMessage}</IndividualChatMsg>
+            <IndividualChatFirstName>{curr['userName']}:</IndividualChatFirstName>
+            <IndividualChatMsg>{curr['userMsg']}</IndividualChatMsg>
           </IndividualChat>
         })}
       </ChatHistoryContainer>
