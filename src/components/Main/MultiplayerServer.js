@@ -25,13 +25,10 @@ header has a value 'http://localhost:3001' that is not equal to the supplied ori
 polling-xhr.js:157
 GET http://localhost:3001/socket.io/?EIO=4&transport=polling&t=N-zpZXb net::ERR_FAILED 200
 
-
-
 polling-xhr.js:157 GET http://localhost:3001/socket.io/?EIO=4&transport=polling&t=N--qOLZ net::ERR_CONNECTION_TIMED_OUT?????
  */
 
 const port = 3002;
-const users = {};
 
 io.on('connection', (socket) => {
   console.log(`A connected user: ${socket.id}`);

@@ -1,5 +1,5 @@
 import './App.css';
-import {BrowserRouter, Routes, Route} from "react-router-dom";
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 
 import HomePage from "./components/Start/HomePage";
 import Main from './components/Main/Main';
@@ -11,12 +11,14 @@ export const mainUrl = "/main";
 export const resultUrl = "/result";
 
 function App() {    /*TODO Resize the elements so that the view on the phone would have the video ono the bottom */
-  // http://localhost:3000/flash-trivia
-
+  /*
+  http://localhost:3000
+  */
   return (
     <div className="App">
       <BrowserRouter>
           <Routes>
+            <Route path={'/'} element={<Navigate to={homeUrl} />} />
             <Route path={homeUrl} element={<HomePage />} />
             <Route path={mainUrl} element={<Main userDifficulty={"hard"}/>} />
             <Route path={resultUrl} element={<Result />} />
@@ -29,9 +31,6 @@ function App() {    /*TODO Resize the elements so that the view on the phone wou
           </Routes>
       </BrowserRouter>
     </div>
-    /*<div className={"App"}>
-      <Main userDifficulty={"hard"}/>
-    </div>*/
   );
 }
 
