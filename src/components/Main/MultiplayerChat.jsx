@@ -1,6 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components';
-
+import qs from 'qs';  // Decode userName & userRoom from url
+import { v4 as uuidv4 } from 'uuid' // Generate unique id for placing players into rooms in socket
 import socketIOClient from 'socket.io-client';
 const socket = socketIOClient("http://localhost:3002", {secure: false});
 
@@ -41,7 +42,6 @@ const IndividualChatMsg = styled.span`
   margin-right: 2vw;
   word-spacing: 0.75px;
 `
-
 // Box to insert new message to the group
 const InsertChatContainer = styled.div` // Container where user can send a message and post it inside ChatHistory
   display: flex;
@@ -70,19 +70,20 @@ const InsertChatBtn = styled.button` // Send a event to add chat to ChatHistoryC
   }
 `
 
-// Chat part of Multiplayer component where the user will be able to communicate with four other player
-const MultiplayerChat = () => {
-  /**
-   * Individual Chat:
-   * {
-   *   userId: {arbitrary ID assigned}
-   *   userName: {arbitrary Name}
-   *   userMessage: {arbitrary Message}
-   * }
-   */
-  //const [chatHistory, setChatHistory] = useState();
+// Chat part of Multiplayer component where the client will be able to communicate with four other player
+const MultiplayerChat = (props) => {
+
+  // Information of each Individual Player joining the main trivia game page
+  const [userId, setUserId] = useState(`${uuidv4()}`);
+  const [userName, setUserName] = useState('');
+  const [userRoom, setUserRoom] = useState('');
+
+  // newChat: user inputting new chat to broadcast to other
+  // chatHistory: container with chat history among 5 players
   const [newChat, setNewChat] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
+
+  const eachTeam =
 
   const postNewChat = () => {
     if (newChat.length === 0) {
@@ -98,8 +99,10 @@ const MultiplayerChat = () => {
     socket.on("connect", () => {
       console.log("Connecting");
     });
-  })
+  });
 
+
+  // Render the lower right chat function on main page
   return(
     <ChatRootContainer>
       <ChatHistoryContainer>
