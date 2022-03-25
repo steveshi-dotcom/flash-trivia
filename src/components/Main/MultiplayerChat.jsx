@@ -1,11 +1,13 @@
 import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components';
-import qs from 'qs';  // Decode userName & userRoom from url
-import { v4 as uuidv4 } from 'uuid' // Generate unique id for placing players into rooms in socket
-import socketIOClient from 'socket.io-client';
+import { useLocation } from "react-router-dom";
+import qs from 'qs';
+import { searchNameParam, searchRoomParam } from "../Start/HomePage";
+import { v4 as uuidv4 } from 'uuid';
+import socketIOClient, {connect} from 'socket.io-client';
 const socket = socketIOClient("http://localhost:3002", {secure: false});
 
-// styled components
+// ----styled components----
 const ChatRootContainer = styled.div` // Root of the Chat rendering where clients send msg to communicate with others
   background-color: black;
   color: black;
@@ -70,36 +72,66 @@ const InsertChatBtn = styled.button` // Send a event to add chat to ChatHistoryC
   }
 `
 
+// Const representing an {}'s property to send to socket server for each player
+export const s_userId = 'userId';
+export const s_userName = 'userName';
+export const s_userRoom = 'userRoom';
+export const s_userMsg = 'userMessage';
+
+// Const representing sockets events that will be emitted for the server
+export const pl_connect = 'player_connected';
+export const pl_disconnect = 'player_disconnected';
+export const pl_newMessage = 'player_sent_message';
+
+
 // Chat part of Multiplayer component where the client will be able to communicate with four other player
 const MultiplayerChat = (props) => {
 
-  // Information of each Individual Player joining the main trivia game page
+  // const representing value of the four properties that will be emitted to the socket server
   const [userId, setUserId] = useState(`${uuidv4()}`);
   const [userName, setUserName] = useState('');
   const [userRoom, setUserRoom] = useState('');
 
-  // newChat: user inputting new chat to broadcast to other
+  // userMsg: user inputting new chat to broadcast to other
   // chatHistory: container with chat history among 5 players
-  const [newChat, setNewChat] = useState('');
+  const [userMsg, setUserMsg] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
 
-  const eachTeam =
+  // () Obtain the player information from the url such as: http://localhost:3000/game/?name=steve&room=1234
+  const playerLocation = useLocation();
+  const setPlayerInformation = () => {
+    const playerInput = qs.parse(playerLocation.search.slice(1)); // playerLocation.search: ?name=steve&room=1234
+    setUserName(playerInput[searchNameParam]);
+    setUserRoom(playerInput[searchRoomParam]);
+  }
 
+  // () inform a new player has joined in the chat room
+  const informNewPlayer = (newPlayerData) => {
+    //setChatHistory([...chatHistory, newPlayerData]);
+    console.log("joining us today:");
+    console.log(newPlayerData);
+  }
+
+  // () post the new chat into the chatHistory and emitting to all players within the room
   const postNewChat = () => {
-    if (newChat.length === 0) {
+    if (userMsg.length === 0) {
       setChatHistory([...chatHistory, {"userId": 1236, "userName": "John", "userMessage": "(◔_◔)"}]);
     } else {
       console.log("Hello");
-      setChatHistory([...chatHistory, {"userId": 1236, "userName": "John", "userMessage": newChat}]);
+      setChatHistory([...chatHistory, {"userId": 1236, "userName": "John", "userMessage": userMsg}]);
     }
-    setNewChat('');
+    setUserMsg('');
   }
 
+  // Effect() After a player joined, get their information and inform other players in the chat room
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connecting");
+    setPlayerInformation();
+    const newPlayerData = {s_userId: userId, s_userName: userName, s_userRoom: userRoom};
+    socket.emit(pl_connect, newPlayerData);
+    socket.on(pl_connect, (newPlayerData) => {
+      informNewPlayer(newPlayerData);
     });
-  });
+  }, [userName, userRoom]);
 
 
   // Render the lower right chat function on main page
@@ -114,7 +146,7 @@ const MultiplayerChat = (props) => {
         })}
       </ChatHistoryContainer>
       <InsertChatContainer>
-        <InsertChatInput type={"text"} onChange={(e) => setNewChat(e.target.value)} value={newChat}/>
+        <InsertChatInput type={"text"} onChange={(e) => setUserMsg(e.target.value)} value={userMsg}/>
         <InsertChatBtn onClick={postNewChat}>post</InsertChatBtn>
       </InsertChatContainer>
     </ChatRootContainer>

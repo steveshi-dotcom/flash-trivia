@@ -1,10 +1,10 @@
-const express = require('express');
-const app = express();
-const http = require('http');
-const cors = require('cors');
-const { Server } = require('socket.io');
-app.use(cors());
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import { Server } from 'socket.io';
 
+const app = express();
+app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -12,21 +12,12 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   }
 });
+
 /*
 cd src/components/Main
 nodemon MultiplayerServer.js
  */
-/*
-TODO: FIX these gibberish
-0{"sid":"hdDooz1LlE0H0FIrAAAH","upgrades":["websocket"],"pingInterval":25000,"pingTimeout":20000}
-Access to XMLHttpRequest at 'http://localhost:3001/socket.io/?EIO=4&transport=polling&t=N-zpZXb'
-from origin 'http://localhost:3000' has been blocked by CORS policy: The 'Access-Control-Allow-Origin'
-header has a value 'http://localhost:3001' that is not equal to the supplied origin.
-polling-xhr.js:157
-GET http://localhost:3001/socket.io/?EIO=4&transport=polling&t=N-zpZXb net::ERR_FAILED 200
 
-polling-xhr.js:157 GET http://localhost:3001/socket.io/?EIO=4&transport=polling&t=N--qOLZ net::ERR_CONNECTION_TIMED_OUT?????
- */
 
 const port = 3002;
 

@@ -62,8 +62,8 @@ const JoinBtn = styled.button`
   }
 `
 
-const searchName = 'name';
-const searchRoom = 'room';
+export const searchNameParam = 'name';
+export const searchRoomParam = 'room';
 
 const HomePage = () => {
   const [name, setName] = useState('');
@@ -81,8 +81,8 @@ const HomePage = () => {
       navigate({
         pathname: mainUrl,
         search: createSearchParams([
-          [searchName, name],
-          [searchRoom, room]
+          [searchNameParam, name],
+          [searchRoomParam, room]
         ]).toString()
       });
     }
@@ -94,11 +94,11 @@ const HomePage = () => {
       <HomeContainer>
         <InformationContainer>
           <UserQuestion>Name:</UserQuestion>
-          <UserInput type={'text'} onChange={e => setName(e.target.value)} placeHolder={"Hello"}/>
+          <UserInput type={"text"} onChange={e => setName(e.target.value)} placeHolder={"Hello"}/>
         </InformationContainer>
         <InformationContainer>
           <UserQuestion>Room#:</UserQuestion>
-          <UserInput type={'text'} onChange={e => setRoom(e.target.value)}/>
+          <UserInput type={"text"} onChange={e => setRoom(e.target.value)}/>
         </InformationContainer>
         <JoinBtn onClick={startTriviaSession}>Start</JoinBtn>
       </HomeContainer>
