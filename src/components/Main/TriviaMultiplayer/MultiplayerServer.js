@@ -24,11 +24,7 @@ const disconnectDuplicate = (newUserId) => {
   const usersCopy = users.filter(curr => {
     return curr.userId === newUserId;
   });
-  if (usersCopy.length !== 0) {
-    return true;
-  } else {
-    return false;
-  }
+  return usersCopy.length !== 0;
 };
 
 io.on('connection', (socket) => {
@@ -59,26 +55,23 @@ io.on('connection', (socket) => {
         "userName": playerPostedChat.userName,
         "userMsg": playerPostedChat.userMsg
       };
-      console.log(playerPostedChat);
-      console.log("EMITTING");
       io.in(userRoom).emit("chat-message", messageBox);
     });
 
     // Sending peer id and other meta info to others in the room so one/one connection can be established with each
-    socket.on("join-peers", playerPeerInfo => {
+    socket.on("meet-up", () => {
       console.log("Emitting peer info to other players in the room." + userRoom);
-      console.log(playerPeerInfo);
-      io.to(userRoom).emit("join-peers", playerPeerInfo);
+      io.to(userRoom).emit("meet-up", userId);  // Currently Emittin to every person in the room including the send???? io.to/io.in
     });
 
     // Inform the other players in the game room that a player has left
     socket.on("disconnect", () => {
       socket.leave(userRoom);
-      users.filter(curr => {
+      users = users.filter(curr => {
         return curr.userId !== userId;
       })
       // msg updating the chatroom that the player has left
-      const playerLeavingUpdate = `I have left the game ヾ(・ﻌ・)ゞ at
+      const playerLeavingUpdate = `I have left the game at
         ${new Date().getHours()}:${new Date().getMinutes() < 10 ?
         '0' + new Date().getMinutes()
         : new Date().getMinutes()}`;

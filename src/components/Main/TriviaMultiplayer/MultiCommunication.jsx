@@ -93,15 +93,14 @@ const VideoHolder1 = styled.video`
 `
 
 // MultiCommunication part of the Main where player can communicate with four other player via video/chat
-const MultiCommunication = (props) => {
-
+const MultiCommunication = () => {
   // unique uuid for each player, use for keeping track of users in socket for chat and peer identification for video
   const [userId, setUserId] = useState(`${uuidv4()}`);
 
   // const representing value of the three properties that will be emitted to the socket server
   const [userName, setUserName] = useState('');
   const [userRoom, setUserRoom] = useState('');
-  const [userMsg, setUserMsg] = useState('');
+  const userMsg = useRef('');
 
   // chatHistory: container for chat history among 5 players
   // each index stores an object with just userName + userMsg prop
@@ -127,7 +126,7 @@ const MultiCommunication = (props) => {
       userId: userId,
       userName: playerInput[searchNameParam],
       userRoom: playerInput[searchRoomParam],
-      userMsg: `I have joined the game ヾ(・ﻌ・)ゞ at 
+      userMsg: `I have joined the game at 
         ${new Date().getHours()}:${new Date().getMinutes() < 10 ?
         '0' + new Date().getMinutes()
         : new Date().getMinutes()}
@@ -147,11 +146,11 @@ const MultiCommunication = (props) => {
       userName: userName,
       userMsg: "(◔_◔)"
     };
-    if (userMsg.length !== 0) {
-      postedChat['userMsg'] = userMsg;
+    if (userMsg.current.length !== 0) {
+      postedChat['userMsg'] = userMsg.current;
     }
     socket.emit("chat-message", postedChat);
-    setUserMsg('');
+    document.getElementById("chatInput").value = '';
 
     // Listen for any incoming messages from other players
     socket.on("chat-message", (incomingChat) => {
@@ -164,60 +163,74 @@ const MultiCommunication = (props) => {
     socket.on("lost-player", (incomingUpdate) => {
       console.log(incomingUpdate);
       updateChatHistory(incomingUpdate);
-    })
+    });
   }
 
-  // VIDEO PART----->
-  // Keep track of stream of video from other players
-  const peer = new Peer(userId);
-  const [videoStreams, setVideoStreams] = useState([]);
-  const localVideo = useRef(null);
-  const otherVideo = useRef(null);
-  const getLocalVideo = () => {
-    let video = localVideo.current;
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then(stream => {
-        video.srcObject = stream;
-        video.play();
-      })
-      .catch(err => {
-        console.error("error:", err);
-      });
-    return video;
+  // VIDEO PART ---->
+  let peer = new Peer(userId);
+  //const [localStream, setLocalStream] = useState('');
+  const [remoteStream, setRemoteStream] = useState([]);
+  //const dummyVidRef = useRef(null);
+  useEffect(() => {
+    // Send peer id to other players in the room to establish connection with them
+    socket.emit('meet-up');
+
+    // Listen for new peer connection and attempt to make video call with them
+    socket.on('meet-up', otherPeerId => {
+      if (otherPeerId !== peer.id) {
+        console.log(otherPeerId);
+        navigator.mediaDevices.getUserMedia({video: true, audio: true})
+          .then(stream => {
+            let vidCall = peer.call(otherPeerId, stream);
+            vidCall.on('stream', otherStream => { // Append the new player stream onto remoteStreams
+              appendNewStream(otherStream);
+            })
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    });
+
+    // Accept any incoming peer calls
+    peer.on('call', someoneCalling => {     // NEVER GETTING ANY CALLS?????
+      console.log("SomeoneCalling");
+      navigator.mediaDevices.getUserMedia({video: true, audio: true})
+        .then(stream => {
+          someoneCalling.answer(stream);
+          someoneCalling.on('stream', stream => {
+            appendNewStream(stream);
+          })
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    });
+  }, []);
+
+  // Append other player streams to the videoStreams
+  const appendNewStream = (newStream) => {
+    const remoteStreamCopy = remoteStream;
+    remoteStreamCopy.push(newStream);
+    setRemoteStream(remoteStreamCopy);
   }
-  useEffect(() => {   // useEffect() to get peer video
 
-    // Emit player peer info to other players in the room
-    socket.emit('join-peers', {"userId": peer.id, "userName": userName});
+  // 少了几个。放一些音乐-》 浪子闲话： 花瞳
+  const displayUnavailablePlayer = () => {
+    let needed = 4 - remoteStream.length;
+    if (needed !== 0) {
+      return <VideoHolder1 src={"https://www.youtube.com/embed/1VdoMsLY4Z4"} />
+    }
+  }
 
-    // Accept new player peer info and attempt to call the new peer
-    socket.on('join-peers', newPeer => {
-      let myCall = peer.call(newPeer.id, getLocalVideo());
-      myCall.on('stream', stream => {
-        let video = otherVideo.current;
-        video.srcObject = stream;
-        video.play();
-        const videoStreamCopy = videoStreams;
-        videoStreamCopy.push(video);
-        setVideoStreams(videoStreamCopy);
-      })
-    });
-
-    // Accept any incoming call from other peers
-    peer.on('call', call => {
-      call.answer(getLocalVideo());
-    });
-  }, [localVideo])
-
+  console.log(remoteStream.length);
   // Render the lower right chat function on main page
   return(
     <div>
       <VideoRootContainer>
-        <VideoHolder1 ref={videoStreams.length >= 1 ? videoStreams[0] : localVideo} />
-        <VideoHolder1 ref={videoStreams.length >= 2 ? videoStreams[1] : localVideo} />
-        <VideoHolder1 ref={videoStreams.length >= 3 ? videoStreams[2] : localVideo} />
-        <VideoHolder1 ref={videoStreams.length === 4 ? videoStreams[3] : localVideo} />
+        {remoteStream.map((curr, ind) => {
+          return <VideoHolder1 src={curr} key={ind} />
+        })}
       </VideoRootContainer>
       <ChatRootContainer>
         <ChatHistoryContainer>
@@ -229,7 +242,7 @@ const MultiCommunication = (props) => {
           })}
         </ChatHistoryContainer>
         <InsertChatContainer>
-          <InsertChatInput type={"text"} onChange={(e) => setUserMsg(e.target.value)} value={userMsg}/>
+          <InsertChatInput id={"chatInput"} type={"text"} onChange={(e) => userMsg.current = e.target.value} />
           <InsertChatBtn onClick={postNewChat}>post</InsertChatBtn>
         </InsertChatContainer>
       </ChatRootContainer>
