@@ -14,7 +14,6 @@ const TriviaMultiplayerContainer = styled(TriviaGameContainer)`
 const TriviaMultiplayer = () => {
   return(
     <TriviaMultiplayerContainer>
-      <MultiplayerVideo />
       <MultiplayerChat />
     </TriviaMultiplayerContainer>
   )

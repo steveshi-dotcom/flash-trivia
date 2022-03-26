@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Peer from "peerjs";
-
+import Peer from 'peerjs';
 
 // Video part of Multiplayer component where the user will be able to communicate with four other player
 const VideoRootContainer = styled.div`
@@ -29,8 +28,12 @@ const VideoHolder4 = styled(VideoHolder1)`
   margin-bottom: 10px;
   margin-left: 5px;
 `
+
 const MultiplayerVideo = () => {
-  const peer = new Peer()
+
+  const peer = new Peer();
+  const conn = peer.connect();
+
 
   return(
     <VideoRootContainer>
