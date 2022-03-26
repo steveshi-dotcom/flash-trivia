@@ -88,6 +88,13 @@ const MultiplayerChat = (props) => {
   const [chatHistory, setChatHistory] = useState([]);
 
 
+  // Update the chatHistory by appending the new incoming chat into a copy and destructuring it
+  const updateChatHistory = (incomingMsg) => {
+    const chatHistoryCopy = chatHistory;
+    chatHistoryCopy.push(incomingMsg);
+    setChatHistory([...chatHistoryCopy]);
+  }
+
   // () Obtain the player information from the url such as: http://localhost:3000/game/?name=steve&room=1234
   // Effect() After a player joined, get their information and inform other players in the chat room
   const playerLocation = useLocation();
@@ -99,15 +106,17 @@ const MultiplayerChat = (props) => {
       userId: userId,
       userName: playerInput[searchNameParam],
       userRoom: playerInput[searchRoomParam],
-      userMsg: "I have joined the room. ヾ(・ﻌ・)ゞ"
+      userMsg: `I have joined the game ヾ(・ﻌ・)ゞ at 
+        ${new Date().getHours()}:${new Date().getMinutes() < 10 ?
+        '0' + new Date().getMinutes()
+        : new Date().getMinutes()}
+        `
     });
-
     // Inform other players in the room that a new player has joined
     socket.on("new-player", (newPlayerData) => {
-      setChatHistory([...chatHistory, newPlayerData])
+      updateChatHistory(newPlayerData);
     });
   }, [playerLocation]);
-
 
   // () post the new chat into the chatHistory and emitting to all players within the room
   const postNewChat = () => {
@@ -119,20 +128,20 @@ const MultiplayerChat = (props) => {
     if (userMsg.length !== 0) {
       postedChat['userMsg'] = userMsg;
     }
-    console.log(postedChat);
     socket.emit("chat-message", postedChat);
+    setUserMsg('');
+
     socket.on("chat-message", (incomingChat) => {
       const newIndividualChat = { userName: incomingChat['userName'], userMsg: incomingChat['userMsg'] }
-      console.log(incomingChat);
-      const chatHistoryCopy = chatHistory;
-      chatHistoryCopy.push(newIndividualChat);
-      console.log(chatHistoryCopy);
-      setChatHistory([...chatHistoryCopy]);
+      console.log(newIndividualChat);
+      updateChatHistory(incomingChat);
     });
-    setUserMsg('');
+
+    socket.on("lost-player", (incomingUpdate) => {
+      console.log(incomingUpdate);
+      updateChatHistory(incomingUpdate);
+    })
   }
-
-
 
   // Render the lower right chat function on main page
   return(

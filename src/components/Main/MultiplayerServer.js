@@ -28,33 +28,49 @@ io.on('connection', (socket) => {
   console.log("------------------------------------------------------");
   console.log(`A connected user: ${socket.id}`);
 
-
   // A new player has joined, emit the playerData specifically in that room to inform the others
   socket.on("join-game", (dataChunk) => {
     const { userId, userName, userRoom, userMsg} = dataChunk;
 
-    // Inform players in that room that a new player has connected
-    console.log("A player has connected");
-    console.log(dataChunk);
-    socket.join(userRoom);
-    io.in(userRoom).emit("new-player", {"userName": userName, "userMsg": userMsg});
+    // if the userId is already contained within the users[], then disconnect the socket
+    const usersCopy = users.filter(curr => {
+      return curr.userId === userId;
+    });
+    if (usersCopy.length !== 0) {
+      io.disconnectSockets(true);
+    } else {
+      users.push(userId);
+    }
 
-    // Send messages to the players in the room
+    // Inform players in that room that a new player has connected
+    socket.join(userRoom);
+    io.in(userRoom).emit("new-player", {
+      "userName": userName,
+      "userMsg": userMsg
+    });
+
+    // Send message to every player including the sender in the room
     socket.on("chat-message", (playerPostedChat) => {
-      console.log("Sending a new chat");
-      console.log(playerPostedChat);
-      const sendToOther = {"userName": playerPostedChat.userName, "userMsg": playerPostedChat.userMsg}
-      console.log(sendToOther);
-      io.emit("chat-message", sendToOther);
+      const messageBox = {
+        "userName": playerPostedChat.userName,
+        "userMsg": playerPostedChat.userMsg
+      };
+      io.in(userRoom).emit("chat-message", messageBox);
     });
 
     // Inform players in that room that a player has disconnected
-    socket.leave(userRoom);
     socket.on("disconnect", () => {
-      io.in(userRoom).emit("lost-player", userName)
+      socket.leave(userRoom);
+      io.in(userRoom).emit("lost-player", {
+        "userName": userName,
+        "userMsg": `I have left the game ヾ(・ﻌ・)ゞ at 
+        ${new Date().getHours()}:${new Date().getMinutes() < 10 ?
+          '0' + new Date().getMinutes()
+          : new Date().getMinutes()}`
+      });
     });
-  });
 
+  });
 
   //------------------------------------------------------
   socket.on('disconnect', (reason) => {
