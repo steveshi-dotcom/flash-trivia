@@ -13,7 +13,7 @@ const io = new Server(server, {
   }
 });
 /*
-cd src/components/Main
+cd src/components/Main/TriviaMultiplayer
 nodemon MultiplayerServer.js
  */
 
@@ -29,7 +29,7 @@ const disconnectDuplicate = (newUserId) => {
   } else {
     return false;
   }
-}
+};
 
 io.on('connection', (socket) => {
   console.log("------------------------------------------------------");

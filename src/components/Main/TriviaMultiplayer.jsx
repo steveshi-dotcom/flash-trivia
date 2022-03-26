@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components'
 import {TriviaGameContainer} from "./TriviaGame";
-import MultiplayerVideo from "./MultiplayerVideo";
-import MultiplayerChat from "./MultiplayerChat";
+import MultiplayerVideo from "./TriviaMultiplayer/MultiplayerVideo.jsx";
+import MultiplayerChat from "./TriviaMultiplayer/MultiplayerChat.jsx";
 
 // style components
 const TriviaMultiplayerContainer = styled(TriviaGameContainer)`

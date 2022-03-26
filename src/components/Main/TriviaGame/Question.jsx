@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
-import happyPuppy from './imgs/cute-pup.jpg';
+import happyPuppy from '../imgs/cute-pup.jpg';
 import he from 'he';
 
 // style components

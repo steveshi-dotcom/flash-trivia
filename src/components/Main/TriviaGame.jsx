@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
-import GameLoading from "./GameLoading";
-import Question from './Question';
-import Answer from './Answer';
+import GameLoading from "./TriviaGame/GameLoading.jsx";
+import Question from './TriviaGame/Question.jsx';
+import Answer from './TriviaGame/Answer.jsx';
 import rightAnswer from './imgs/rightMeme.jpeg';
 import wrongAnswer from './imgs/wrongMeme.jpeg';
 

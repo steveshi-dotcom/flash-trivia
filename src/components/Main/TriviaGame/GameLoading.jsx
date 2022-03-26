@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import puppyWaitEye from './imgs/TriviaGameWait.jpg'
+import puppyWaitEye from '../imgs/TriviaGameWait.jpg'
 
 // Style component
 const LoadingContainer = styled.img`

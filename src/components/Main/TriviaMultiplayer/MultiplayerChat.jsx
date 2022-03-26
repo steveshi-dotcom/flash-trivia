@@ -2,10 +2,10 @@ import React, {useState, useRef, useEffect} from 'react';
 import styled from 'styled-components';
 import { useLocation } from "react-router-dom";
 import qs from 'qs';
-import { searchNameParam, searchRoomParam } from "../Start/HomePage";
+import { searchNameParam, searchRoomParam } from "../../Start/HomePage.jsx";
 import { v4 as uuidv4 } from 'uuid';
 import socketIOClient, {connect} from 'socket.io-client';
-const socket = socketIOClient("http://localhost:3002", {secure: false});
+export const socket = socketIOClient("http://localhost:3002", {secure: false});
 
 // ----styled components----
 const ChatRootContainer = styled.div` // Root of the Chat rendering where clients send msg to communicate with others
