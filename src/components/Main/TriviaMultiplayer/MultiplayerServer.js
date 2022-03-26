@@ -17,7 +17,7 @@ cd src/components/Main/TriviaMultiplayer
 nodemon MultiplayerServer.js
  */
 
-const port = 3002;
+const port = 3001;
 let users = [];     // Keep track of all users
 
 const disconnectDuplicate = (newUserId) => {
@@ -66,7 +66,8 @@ io.on('connection', (socket) => {
 
     // Sending peer id and other meta info to others in the room so one/one connection can be established with each
     socket.on("join-peers", playerPeerInfo => {
-      console.log("A new peer will be connected with others..");
+      console.log("Emitting peer info to other players in the room." + userRoom);
+      console.log(playerPeerInfo);
       io.to(userRoom).emit("join-peers", playerPeerInfo);
     });
 
