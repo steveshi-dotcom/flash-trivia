@@ -73,7 +73,7 @@ const InsertChatBtn = styled.button` // Send a event to add chat to ChatHistoryC
 `
 
 // Chat part of Multiplayer component where the client will be able to communicate with four other player
-const MultiplayerChat = (props) => {
+const MultiCommunication = (props) => {
 
   // const representing value of the four properties that will be emitted to the socket server
   const [userId, setUserId] = useState(`${uuidv4()}`);
@@ -163,4 +163,4 @@ const MultiplayerChat = (props) => {
   )
 }
 
-export default MultiplayerChat;
+export default MultiCommunication;
