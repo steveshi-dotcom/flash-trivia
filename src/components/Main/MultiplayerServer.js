@@ -18,11 +18,18 @@ nodemon MultiplayerServer.js
  */
 
 const port = 3002;
+let users = [];     // Keep track of all userId
 
-// playerData = { "userId": ?, "userName": ?, "userRoom": ?, "userMsg": ? }
-
-// Keep track of all users
-const users = [];
+const disconnectDuplicate = (newUserId) => {
+  const usersCopy = users.filter(curr => {
+    return curr.userId === newUserId;
+  });
+  if (usersCopy.length !== 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 io.on('connection', (socket) => {
   console.log("------------------------------------------------------");
@@ -33,16 +40,13 @@ io.on('connection', (socket) => {
     const { userId, userName, userRoom, userMsg} = dataChunk;
 
     // if the userId is already contained within the users[], then disconnect the socket
-    const usersCopy = users.filter(curr => {
-      return curr.userId === userId;
-    });
-    if (usersCopy.length !== 0) {
+    if (disconnectDuplicate(userId)) {
       io.disconnectSockets(true);
     } else {
       users.push(userId);
     }
 
-    // Inform players in that room that a new player has connected
+    // Inform the other players in the game room that a player has joined in with them
     socket.join(userRoom);
     io.in(userRoom).emit("new-player", {
       "userName": userName,
@@ -55,21 +59,27 @@ io.on('connection', (socket) => {
         "userName": playerPostedChat.userName,
         "userMsg": playerPostedChat.userMsg
       };
+      console.log(playerPostedChat);
+      console.log("EMITTING");
       io.in(userRoom).emit("chat-message", messageBox);
     });
 
-    // Inform players in that room that a player has disconnected
+    // Inform the other players in the game room that a player has left
     socket.on("disconnect", () => {
       socket.leave(userRoom);
+      users.filter(curr => {
+        return curr.userId !== userId;
+      })
+      // msg updating the chatroom that the player has left
+      const playerLeavingUpdate = `I have left the game ヾ(・ﻌ・)ゞ at
+        ${new Date().getHours()}:${new Date().getMinutes() < 10 ?
+        '0' + new Date().getMinutes()
+        : new Date().getMinutes()}`;
       io.in(userRoom).emit("lost-player", {
         "userName": userName,
-        "userMsg": `I have left the game ヾ(・ﻌ・)ゞ at 
-        ${new Date().getHours()}:${new Date().getMinutes() < 10 ?
-          '0' + new Date().getMinutes()
-          : new Date().getMinutes()}`
+        "userMsg": playerLeavingUpdate
       });
     });
-
   });
 
   //------------------------------------------------------

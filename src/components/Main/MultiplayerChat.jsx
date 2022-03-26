@@ -72,8 +72,6 @@ const InsertChatBtn = styled.button` // Send a event to add chat to ChatHistoryC
   }
 `
 
-// Const representing an {}'s property to send to socket server for each player
-
 // Chat part of Multiplayer component where the client will be able to communicate with four other player
 const MultiplayerChat = (props) => {
 
@@ -81,14 +79,13 @@ const MultiplayerChat = (props) => {
   const [userId, setUserId] = useState(`${uuidv4()}`);
   const [userName, setUserName] = useState('');
   const [userRoom, setUserRoom] = useState('');
-
-  // userMsg: user inputting new chat to broadcast to other
-  // chatHistory: container with chat history among 5 players
   const [userMsg, setUserMsg] = useState('');
+
+  // chatHistory: container for chat history among 5 players
+  // each index stores an object with just userName + userMsg prop
   const [chatHistory, setChatHistory] = useState([]);
 
-
-  // Update the chatHistory by appending the new incoming chat into a copy and destructuring it
+  // Update the chatHistory by setting the new state as the copy of the history with incomingMsg appended to it
   const updateChatHistory = (incomingMsg) => {
     const chatHistoryCopy = chatHistory;
     chatHistoryCopy.push(incomingMsg);
@@ -102,6 +99,8 @@ const MultiplayerChat = (props) => {
     const playerInput = qs.parse(playerLocation.search.slice(1)); // playerLocation.search: ?name=steve&room=1234
     setUserName(playerInput[searchNameParam]);
     setUserRoom(playerInput[searchRoomParam]);
+
+    // emit an 'join-game' event that will place the player in their room with their team
     socket.emit("join-game", {
       userId: userId,
       userName: playerInput[searchNameParam],
@@ -112,7 +111,7 @@ const MultiplayerChat = (props) => {
         : new Date().getMinutes()}
         `
     });
-    // Inform other players in the room that a new player has joined
+    // Listen for 'new-player' event signifying a new player joining their game and send a update to chatHistory
     socket.on("new-player", (newPlayerData) => {
       updateChatHistory(newPlayerData);
     });
@@ -131,12 +130,14 @@ const MultiplayerChat = (props) => {
     socket.emit("chat-message", postedChat);
     setUserMsg('');
 
+    // Listen for any incoming messages from other players
     socket.on("chat-message", (incomingChat) => {
+      console.log(`I have received an chat event from the server at ${new Date().getMilliseconds()}-->${incomingChat.userMsg}`);
       const newIndividualChat = { userName: incomingChat['userName'], userMsg: incomingChat['userMsg'] }
-      console.log(newIndividualChat);
       updateChatHistory(incomingChat);
     });
 
+    // Listen for any player leaving the game and then updating the rest of the players in the game room
     socket.on("lost-player", (incomingUpdate) => {
       console.log(incomingUpdate);
       updateChatHistory(incomingUpdate);
