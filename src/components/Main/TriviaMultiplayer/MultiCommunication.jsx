@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import { useLocation } from "react-router-dom";
 import qs from 'qs';
@@ -82,12 +82,11 @@ const VideoRootContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   padding: 0;
 `
-const VideoHolder1 = styled.iframe`
+const VideoHolder1 = styled.video`
   width: 20vw;
   height: 25vh;
   display: flex;
   margin: .25vh;
-  background-color: deeppink;
   text-align: center;
   justify-content: center;
   align-items: center;
@@ -107,10 +106,6 @@ const MultiCommunication = (props) => {
   // chatHistory: container for chat history among 5 players
   // each index stores an object with just userName + userMsg prop
   const [chatHistory, setChatHistory] = useState([]);
-
-  // Video connection with peers
-  const peer = new Peer(userId);
-  const [videoStreams, setVideoStreams] = useState([]);
 
   // Update the chatHistory by setting the new state as the copy of the history with incomingMsg appended to it
   const updateChatHistory = (incomingMsg) => {
@@ -138,33 +133,16 @@ const MultiCommunication = (props) => {
         : new Date().getMinutes()}
         `
     });
+
     // Listen for 'new-player' event signifying a new player joining their game and send an update to chatHistory
     socket.on("new-player", (newPlayerData) => {
       updateChatHistory(newPlayerData);
     });
-
-    // Establish peer connection between 4 other players
-
-    socket.emit('join-peers', {"userId": peer.id, "userName": playerInput[searchNameParam]});
-    socket.on('join-peers', (otherPeer) => {
-      console.log("-----------------------------------")
-      console.log("Incoming peer info: attempting to connect to this peer");
-      console.log(otherPeer);
-      peer.call(otherPeer.userId, MediaDevices.getUserMedia);
-    });
-
-    peer.on('call', call => {
-      console.log("-----------------------------------")
-      console.log("Incoming call from peer, attempting to answer the call from" + call);
-      console.log(call);
-      call.answer(MediaDevices.getUserMedia);
-    });
-
   }, [playerLocation]);
 
   // () post the new chat into the chatHistory and emitting to all players within the room
   const postNewChat = () => {
-      const postedChat = {
+    const postedChat = {
       userId: userId,
       userName: userName,
       userMsg: "(◔_◔)"
@@ -189,14 +167,57 @@ const MultiCommunication = (props) => {
     })
   }
 
+  // VIDEO PART----->
+  // Keep track of stream of video from other players
+  const peer = new Peer(userId);
+  const [videoStreams, setVideoStreams] = useState([]);
+  const localVideo = useRef(null);
+  const otherVideo = useRef(null);
+  const getLocalVideo = () => {
+    let video = localVideo.current;
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then(stream => {
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(err => {
+        console.error("error:", err);
+      });
+    return video;
+  }
+  useEffect(() => {   // useEffect() to get peer video
+
+    // Emit player peer info to other players in the room
+    socket.emit('join-peers', {"userId": peer.id, "userName": userName});
+
+    // Accept new player peer info and attempt to call the new peer
+    socket.on('join-peers', newPeer => {
+      let myCall = peer.call(newPeer.id, getLocalVideo());
+      myCall.on('stream', stream => {
+        let video = otherVideo.current;
+        video.srcObject = stream;
+        video.play();
+        const videoStreamCopy = videoStreams;
+        videoStreamCopy.push(video);
+        setVideoStreams(videoStreamCopy);
+      })
+    });
+
+    // Accept any incoming call from other peers
+    peer.on('call', call => {
+      call.answer(getLocalVideo());
+    });
+  }, [localVideo])
+
   // Render the lower right chat function on main page
   return(
     <div>
       <VideoRootContainer>
-        <VideoHolder1 src={"https://www.youtube.com/embed/1VdoMsLY4Z4"} />
-        <VideoHolder1 src={"https://www.youtube.com/embed/1VdoMsLY4Z4"} />
-        <VideoHolder1 src={"https://www.youtube.com/embed/1VdoMsLY4Z4"} />
-        <VideoHolder1 src={"https://www.youtube.com/embed/1VdoMsLY4Z4"} />
+        <VideoHolder1 ref={videoStreams.length >= 1 ? videoStreams[0] : localVideo} />
+        <VideoHolder1 ref={videoStreams.length >= 2 ? videoStreams[1] : localVideo} />
+        <VideoHolder1 ref={videoStreams.length >= 3 ? videoStreams[2] : localVideo} />
+        <VideoHolder1 ref={videoStreams.length === 4 ? videoStreams[3] : localVideo} />
       </VideoRootContainer>
       <ChatRootContainer>
         <ChatHistoryContainer>
