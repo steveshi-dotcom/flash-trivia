@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
 import {TriviaGameContainer} from "./TriviaGame";
-import MultiplayerVideo from "./TriviaMultiplayer/MultiplayerVideo.jsx";
 import MultiCommunication from "./TriviaMultiplayer/MultiCommunication.jsx";
 
 // style components
@@ -14,7 +13,6 @@ const TriviaMultiplayerContainer = styled(TriviaGameContainer)`
 const TriviaMultiplayer = () => {
   return(
     <TriviaMultiplayerContainer>
-      <MultiplayerVideo />
       <MultiCommunication />
     </TriviaMultiplayerContainer>
   )

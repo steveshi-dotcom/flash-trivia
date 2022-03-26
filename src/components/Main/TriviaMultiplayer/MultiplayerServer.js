@@ -18,7 +18,7 @@ nodemon MultiplayerServer.js
  */
 
 const port = 3002;
-let users = [];     // Keep track of all userId
+let users = [];     // Keep track of all users
 
 const disconnectDuplicate = (newUserId) => {
   const usersCopy = users.filter(curr => {
@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
     if (disconnectDuplicate(userId)) {
       io.disconnectSockets(true);
     } else {
-      users.push(userId);
+      users.push({"userId": userId, "userName": userName, "userRoom": userRoom});
     }
 
     // Inform the other players in the game room that a player has joined in with them
@@ -62,6 +62,12 @@ io.on('connection', (socket) => {
       console.log(playerPostedChat);
       console.log("EMITTING");
       io.in(userRoom).emit("chat-message", messageBox);
+    });
+
+    // Sending peer id and other meta info to others in the room so one/one connection can be established with each
+    socket.on("join-peers", playerPeerInfo => {
+      console.log("A new peer will be connected with others..");
+      io.to(userRoom).emit("join-peers", playerPeerInfo);
     });
 
     // Inform the other players in the game room that a player has left

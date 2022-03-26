@@ -1,13 +1,15 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import { useLocation } from "react-router-dom";
 import qs from 'qs';
 import { searchNameParam, searchRoomParam } from "../../Start/HomePage.jsx";
 import { v4 as uuidv4 } from 'uuid';
-import socketIOClient, {connect} from 'socket.io-client';
+import Peer from 'peerjs';
+import socketIOClient from 'socket.io-client';
 export const socket = socketIOClient("http://localhost:3002", {secure: false});
 
 // ----styled components----
+/** CHAT */
 const ChatRootContainer = styled.div` // Root of the Chat rendering where clients send msg to communicate with others
   background-color: black;
   color: black;
@@ -72,11 +74,41 @@ const InsertChatBtn = styled.button` // Send a event to add chat to ChatHistoryC
   }
 `
 
-// Chat part of Multiplayer component where the client will be able to communicate with four other player
+/** VIDEO */
+const VideoRootContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0;
+`
+const VideoHolder1 = styled.div`
+  width: 20vw;
+  height: 25vh;
+  display: flex;
+  margin-top: 10px;
+  background-color: deeppink;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+`
+const VideoHolder2 = styled(VideoHolder1)`
+  margin-left: 5px;
+`
+const VideoHolder3 = styled(VideoHolder1)`
+  margin-bottom: 10px;
+  margin-right: 5px;
+`
+const VideoHolder4 = styled(VideoHolder1)`
+  margin-bottom: 10px;
+  margin-left: 5px;
+`
+
+// MultiCommunication part of the Main where player can communicate with four other player via video/chat
 const MultiCommunication = (props) => {
 
-  // const representing value of the four properties that will be emitted to the socket server
+  // unique uuid for each player, use for keeping track of users in socket for chat and peer identification for video
   const [userId, setUserId] = useState(`${uuidv4()}`);
+
+  // const representing value of the three properties that will be emitted to the socket server
   const [userName, setUserName] = useState('');
   const [userRoom, setUserRoom] = useState('');
   const [userMsg, setUserMsg] = useState('');
@@ -111,7 +143,7 @@ const MultiCommunication = (props) => {
         : new Date().getMinutes()}
         `
     });
-    // Listen for 'new-player' event signifying a new player joining their game and send a update to chatHistory
+    // Listen for 'new-player' event signifying a new player joining their game and send an update to chatHistory
     socket.on("new-player", (newPlayerData) => {
       updateChatHistory(newPlayerData);
     });
@@ -133,7 +165,7 @@ const MultiCommunication = (props) => {
     // Listen for any incoming messages from other players
     socket.on("chat-message", (incomingChat) => {
       console.log(`I have received an chat event from the server at ${new Date().getMilliseconds()}-->${incomingChat.userMsg}`);
-      const newIndividualChat = { userName: incomingChat['userName'], userMsg: incomingChat['userMsg'] }
+      //const newIndividualChat = { userName: incomingChat['userName'], userMsg: incomingChat['userMsg'] }
       updateChatHistory(incomingChat);
     });
 
@@ -144,22 +176,50 @@ const MultiCommunication = (props) => {
     })
   }
 
+  // Establish peer connection between 4 other players
+  const [userPeer, setUserPeer] = useState(new Peer(userId));
+  const [userCallList, setUserCallList] = useState([]);
+  useEffect(() => {
+    socket.emit("join-peers", {
+      "userId": userId,
+      "userName": userName,
+    });
+    socket.on("join-peers", (newPeerInfo) => {
+      console.log("Attempting to establish connection with new peer..");
+      const newCall = userPeer.call(`${newPeerInfo.userId}`, navigator.getUserMedia());
+      const userCallListCopy = userCallList;
+      userCallListCopy.push(newCall);
+      setUserCallList(userCallListCopy);
+    });
+    userPeer.on('call', function(call){
+      call.answer(navigator.getUserMedia);
+    })
+  }, []);
+
   // Render the lower right chat function on main page
   return(
-    <ChatRootContainer>
-      <ChatHistoryContainer>
-        {chatHistory.map((curr, ind) => {
-          return <IndividualChat key={ind}>
-            <IndividualChatFirstName>{curr['userName']}:</IndividualChatFirstName>
-            <IndividualChatMsg>{curr['userMsg']}</IndividualChatMsg>
-          </IndividualChat>
-        })}
-      </ChatHistoryContainer>
-      <InsertChatContainer>
-        <InsertChatInput type={"text"} onChange={(e) => setUserMsg(e.target.value)} value={userMsg}/>
-        <InsertChatBtn onClick={postNewChat}>post</InsertChatBtn>
-      </InsertChatContainer>
-    </ChatRootContainer>
+    <div>
+      <VideoRootContainer>
+        <VideoHolder1>Player Video 1</VideoHolder1>
+        <VideoHolder2>Player Video 2</VideoHolder2>
+        <VideoHolder3>Player Video 3</VideoHolder3>
+        <VideoHolder4>Player Video 4</VideoHolder4>
+      </VideoRootContainer>
+      <ChatRootContainer>
+        <ChatHistoryContainer>
+          {chatHistory.map((curr, ind) => {
+            return <IndividualChat key={ind}>
+              <IndividualChatFirstName>{curr['userName']}:</IndividualChatFirstName>
+              <IndividualChatMsg>{curr['userMsg']}</IndividualChatMsg>
+            </IndividualChat>
+          })}
+        </ChatHistoryContainer>
+        <InsertChatContainer>
+          <InsertChatInput type={"text"} onChange={(e) => setUserMsg(e.target.value)} value={userMsg}/>
+          <InsertChatBtn onClick={postNewChat}>post</InsertChatBtn>
+        </InsertChatContainer>
+      </ChatRootContainer>
+    </div>
   )
 }
 
