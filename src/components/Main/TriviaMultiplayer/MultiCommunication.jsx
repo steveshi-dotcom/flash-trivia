@@ -168,6 +168,13 @@ const MultiCommunication = () => {
 
 
   // VIDEO PART ---->
+  // C1: When a player joins, send peerInfo to others. Other call this new peer and add incoming streams to remote
+  //     Other will append the incoming stream to remoteStream
+  // C2: When a player joins, call all other peers and add the streams beside caller....
+
+  // CHOOSE C1 <-----
+
+  // Stores remote streams of all other-player
   const [remoteStreams, setRemoteStreams] = useState({});
   /**       ??Asynchronocity issue??
    * const appendOtherStream = (otherId, otherStream) => {
@@ -254,47 +261,61 @@ const MultiCommunication = () => {
    */
 
   useEffect(() => {
-
-    // () VID VID VID VID VID
+    // () VIDEO ADDING Version 4.5
     const addRemoteStreams = (peerId, video) => {
+      /*console.log("ADDING STREAMS");
+      console.log(peerId);*/
       const remoteStreamsCopy = remoteStreams;
       remoteStreamsCopy[peerId] = video;
+      //console.log(remoteStreamsCopy);
       setRemoteStreams(Object.assign({}, remoteStreamsCopy));
     }
 
+    // Getting local streams, existing players within room call new player, new player accept incoming call from others
     navigator.mediaDevices.getUserMedia({video: true, audio: true})
       .then(stream => {
+        // Make new peer object with unique uuid and at server localhost:3002/flash-trivia or whatever in the future
         const peer = new Peer(userId, {
           host: 'localhost',
           port: 3002,
           path: '/flash-trivia'
         });
+
+        // Check Peer is on, if not it is not connected to the server and dataConnection won't transport mediaStream
         peer.on('open',id => {
           console.log(id);
-        })
+        });
 
+        // Listen for meet-up event, then call other peer using the id. Add their responding stream to remoteStream
         socket.on('meet-up', otherPeerId => {
-          console.log("CALLING A PEER");
-          console.log(`My id is => ${peer.id} and calling this id => ${otherPeerId}`);
-          peer.call(otherPeerId, stream);
-        })
+          console.log(`Initiating CALL ==== MyID is => ${peer.id} \n CallerId is => ${otherPeerId}`);
+          const call = peer.call(otherPeerId, stream);
+          call.on('stream', stream => {
+            addRemoteStreams(call.peer, stream);
+          })
+        });
 
+        // Accept new peer calls and provide local media stream to them, add their calling stream to remoteStreams
         peer.on('call', call => {
-          console.log("ANSWERING A CALLLLLLLLL");
-          console.log(`My id is => ${peer.id} and getting call from this id => ${call.peer}`);
+          console.log(`Intercepting CALL ==== MyID is => ${peer.id} \n CallerId is => ${call.peer}`);
           call.answer(stream);
           call.on('stream', stream => {
-            addRemoteStreams(stream.id, stream);
+            addRemoteStreams(call.peer, stream);
           })
-        })
+        });
       })
       .catch(err => console.log(err));
   }, [userId]);
 
+  // Dummy effect to check if all streams are stored. stores playerNum - 1(sender)
+  useEffect(() => {
+    console.log(remoteStreams); // Theortically should store all other streams beside the player.
+  }, [remoteStreams]);
   // Render the lower right chat function on main page
   return(
     <div>
       <VideoRootContainer>
+
       </VideoRootContainer>
       <ChatRootContainer>
         <ChatHistoryContainer>
