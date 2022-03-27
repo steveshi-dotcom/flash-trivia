@@ -48,7 +48,7 @@ const TriviaGame = (props) => {
 
     // Load up the rendering of the question after triviaQueues finish up fetching the question
     setTimeout(() => {
-      //setLoading(false);
+      setLoading(false);
     }, 1); // Allow the user to look at the puppy pic a bit longer :)
   }
 

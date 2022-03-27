@@ -1,15 +1,11 @@
 import React, {useEffect, useRef} from 'react';
 import styled from "styled-components";
 
-/** VIDEO */
+// styled components
 const VideoHolder1 = styled.video`
   width: 20vw;
   height: 25vh;
-  display: flex;
-  margin: .25vh;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
+  margin: 0 .75vw 0 0;
 `
 
 // props: stream
@@ -17,17 +13,12 @@ const Video = (props) => {
   const vidRef = useRef(undefined);
 
   useEffect(() => {
-    let video = vidRef.current;
-    video.srcObject = props.stream;
-    video.play();
-
+    vidRef.current.srcObject = props.stream;
+    vidRef.current.play();
   }, [vidRef.current])
 
   return(
-    <div>
       <VideoHolder1 ref={vidRef} />
-    </div>
   )
 }
-
 export default Video;

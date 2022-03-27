@@ -21,7 +21,7 @@ const ChatRootContainer = styled.div` // Root of the Chat rendering where client
   display: flex;
   flex-direction: column;
   border-radius: .25em;
-  margin-top: .25vh;
+  margin-top: 1vh;
 `
 const ChatHistoryContainer = styled.div` // History of past chat
   width: 40.33vw;
@@ -82,7 +82,6 @@ const InsertChatBtn = styled.button` // Send a event to add chat to ChatHistoryC
 const VideoRootContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  padding: 0;
 `
 
 
@@ -304,7 +303,7 @@ const MultiCommunication = () => {
 
   // Dummy effect to check if all streams are stored. stores playerNum - 1(sender)
   useEffect(() => {
-    console.log(remoteStreams); // Theortically should store all other streams beside the player.
+    console.log(remoteStreams); // theoretically should store all other streams beside the player within remoteStreams
   }, [remoteStreams]);
 
   // Render the right-hand side: video/chat function
