@@ -48,6 +48,7 @@ io.on('connection', (socket) => {
     // Inform the other players in the game room that a player has joined in with them
     socket.join(userRoom);
     io.in(userRoom).emit("new-player", {
+      "userId": userId,
       "userName": userName,
       "userMsg": userMsg
     });
@@ -65,7 +66,7 @@ io.on('connection', (socket) => {
     // Sending peer id and other meta info to others in the room so one/one connection can be established with each
     socket.on("meet-up", (peerId) => {
       console.log(peerId);
-      io.to(userRoom).emit("meet-up", peerId);  // Currently Emittin to every person in the room including the send???? io.to/io.in
+      io.to(userRoom).emit("meet-up", peerId);
     });
 
     // Inform the other players in the game room that a player has left
@@ -74,17 +75,18 @@ io.on('connection', (socket) => {
       users = users.filter(curr => {
         return curr.userId !== userId;
       })
-      console.log("Leaving");
+
       // msg updating the chatroom that the player has left
       const playerLeavingUpdate = `I have left the game at
         ${new Date().getHours()}:${new Date().getMinutes() < 10 ?
         '0' + new Date().getMinutes()
         : new Date().getMinutes()}`;
-      io.in(userRoom).emit("lost-player", {
+      io.in(userRoom).emit("old-player", {  // keep it at old-player :))))
         "userId": userId,
         "userName": userName,
         "userMsg": playerLeavingUpdate
       });
+      console.log("Leaving")
     });
   });
 

@@ -55,7 +55,7 @@ const TriviaGame = (props) => {
   // New round of trivia game, only started on the first round or every new round
   useEffect(() => {
     setUserDifficulty(props.userDifficulty);
-    getTriviaQuestion().then((res) => console.log("Bleep Beep Bop, Questions processed"));
+    getTriviaQuestion();
     setQuestionNum(0);
     setUserPoints(0);
     runTimer.current = 0;

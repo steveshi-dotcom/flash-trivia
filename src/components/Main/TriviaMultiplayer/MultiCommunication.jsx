@@ -128,8 +128,15 @@ const MultiCommunication = () => {
 
     // Listen for 'new-player' event signifying a new player joining their game and send an update to chatHistory
     socket.on("new-player", (newPlayerData) => {
+      console.log("Informing the others that an new player has joined.");
       updateChatHistory(newPlayerData);
     });
+
+    socket.on("old-player", (oldPlayerData) => {
+      console.log("Informing the others that an old player has left.");
+      updateChatHistory(oldPlayerData);
+      removeRemoteStream(oldPlayerData["userId"]);
+    })
   }, [playerLocation]);
 
   // () post the new chat into the chatHistory and emitting to all players within the room
@@ -176,12 +183,12 @@ const MultiCommunication = () => {
 
         // Check Peer is on, if not it is not connected to the server and dataConnection won't transport mediaStream
         peer.on('open',id => {
-          console.log(id);
+          //console.log(id);
         });
 
         // Listen for meet-up event, then call other peer using the id. Add their responding stream to remoteStream
         socket.on('meet-up', otherPeerId => {
-          console.log(`Initiating CALL ==== MyID is => ${peer.id} \n CallerId is => ${otherPeerId}`);
+          // console.log(`Initiating CALL ==== MyID is => ${peer.id} \n CallerId is => ${otherPeerId}`);
           const call = peer.call(otherPeerId, stream);
           call.on('stream', stream => {
             addRemoteStream(call.peer, stream);
@@ -190,31 +197,23 @@ const MultiCommunication = () => {
 
         // Accept new peer calls and provide local media stream to them, add their calling stream to remoteStreams
         peer.on('call', call => {
-          console.log(`Intercepting CALL ==== MyID is => ${peer.id} \n CallerId is => ${call.peer}`);
+          // console.log(`Intercepting CALL ==== MyID is => ${peer.id} \n CallerId is => ${call.peer}`);
           call.answer(stream);
           call.on('stream', stream => {
             addRemoteStream(call.peer, stream);
           })
         });
-
-        // Listen for any player leaving the game and then updating the rest of the players in the game room
-        socket.on("lost-player", (incomingUpdate) => {
-          updateChatHistory(incomingUpdate);
-        });
       })
       .catch(err => console.log(err));
   }, [userId]);
 
-  // () removeStream adding/removing 4.5
+  // () remoteStreams adding/removing 4.5
   const addRemoteStream = (peerId, video) => {
-    console.log("ADDING STREAM");
-    console.log(peerId);
     const remoteStreamsCopy = remoteStreams;
     remoteStreamsCopy[peerId] = video;
-    //console.log(remoteStreamsCopy);
     setRemoteStreams(Object.assign({}, remoteStreamsCopy));
   }
-  const removeRemoteStream = (peerId) => {
+  const removeRemoteStream = (peerId) => {  // NEVER CALLED: lost-player event was never intercepted from server
     console.log("Removing STREAM");
     console.log(peerId);
     const remoteStreamsCopy = remoteStreams;
@@ -226,6 +225,12 @@ const MultiCommunication = () => {
   useEffect(() => {
     console.log(remoteStreams); // theoretically should store all other streams beside the player within remoteStreams
   }, [remoteStreams]);
+
+  // Listen for any player leaving the game and then updating the rest of the players in the game room
+  socket.on("lost-player", (incomingUpdate) => {
+    updateChatHistory(incomingUpdate);
+    removeRemoteStream(incomingUpdate['userId']);
+  });
 
   // Render the right-hand side: video/chat function
   return(
