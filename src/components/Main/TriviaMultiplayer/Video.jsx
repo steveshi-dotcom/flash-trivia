@@ -14,7 +14,9 @@ const Video = (props) => {
 
   useEffect(() => {
     vidRef.current.srcObject = props.stream;
-    vidRef.current.play();
+    vidRef.current.addEventListener("loadedmetadata", () => {
+      vidRef.current.play();
+    });
   }, [vidRef.current])
 
   return(

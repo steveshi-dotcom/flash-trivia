@@ -35,6 +35,7 @@ io.on('connection', (socket) => {
 
   // A new player has joined, emit the playerData specifically in that room to inform the others
   socket.on("join-game", (dataChunk) => {
+    console.log(io.engine.clientsCount);
     const { userId, userName, userRoom, userMsg} = dataChunk;
 
     // if the userId is already contained within the users[], then disconnect the socket
@@ -73,12 +74,14 @@ io.on('connection', (socket) => {
       users = users.filter(curr => {
         return curr.userId !== userId;
       })
+      console.log("Leaving");
       // msg updating the chatroom that the player has left
       const playerLeavingUpdate = `I have left the game at
         ${new Date().getHours()}:${new Date().getMinutes() < 10 ?
         '0' + new Date().getMinutes()
         : new Date().getMinutes()}`;
       io.in(userRoom).emit("lost-player", {
+        "userId": userId,
         "userName": userName,
         "userMsg": playerLeavingUpdate
       });

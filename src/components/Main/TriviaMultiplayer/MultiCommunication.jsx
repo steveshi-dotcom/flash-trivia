@@ -151,13 +151,6 @@ const MultiCommunication = () => {
       //const newIndividualChat = { userName: incomingChat['userName'], userMsg: incomingChat['userMsg'] }
       updateChatHistory(incomingChat);
     });
-
-    // Listen for any player leaving the game and then updating the rest of the players in the game room
-    socket.on("lost-player", (incomingUpdate) => {
-      console.log(incomingUpdate);
-      updateChatHistory(incomingUpdate);
-
-    });
   }
 
   // VIDEO PART ---->
@@ -170,101 +163,7 @@ const MultiCommunication = () => {
   // Stores remote streams of all other-player
   const [remoteStreams, setRemoteStreams] = useState({});
   const videoRef = useRef(undefined);
-  /**       ??Asynchronocity issue??
-   * const appendOtherStream = (otherId, otherStream) => {
-   *       console.log(`Within performPeerCall ----> ${otherStream}`);
-   *       const othersStreamCopy = othersStream;
-   *       othersStreamCopy[otherId] = otherStream;
-   *       setOthersStream(Object.assign({}, othersStreamCopy));
-   *     }
-   *     const performPeerCall = (id) => {
-   *       navigator.mediaDevices.getUserMedia({video: true, audio: true})
-   *         .then(stream => {
-   *           console.log(`Within performPeerCall ---->`);
-   *           console.log(stream);
-   *           let videoCall = peer.call(id, stream);
-   *           videoCall.on('call', peerStream => {
-   *             appendOtherStream(id, peerStream);
-   *           })
-   *         })
-   *         .catch(err => console.log(err));
-   *     }
-   *     peer.on('call', call => {
-   *       console.log("GETTING CALL....");
-   *       navigator.mediaDevices.getUserMedia({video: true, audio: true})
-   *         .then(stream => {
-   *           call.answer(stream);
-   *           call.on('stream', othersStream => {
-   *             appendOtherStream(call.peer, othersStream);
-   *           })
-   *         })
-   *         .catch(err => console.log(err));
-   *     });
-   *
-   *     socket.on('meet-up', (peerId) => {
-   *       console.log(peerId);
-   *       performPeerCall(peerId);
-   *     });
-   *     peer.on('open', (id) => {
-   *       console.log(id);
-   *     })
-   *     socket.emit('meet-up');
-   */
-
-  /** 'Can't load metadata, video === null???
-   *  addVideoStream(video, stream) {
-   *         video.srcObject = stream
-   *         video.addEventListener('loadedmetadata', () => {
-   *           video.play()
-   *         })
-   *         this.videoGrid.append(video)
-   *     }
-   *
-   *     getVideo(){
-   *         const myVideo = document.createElement('video');
-   *         return myVideo;
-   *     }
-   *     connectToNewUser(userId, stream) {
-   *         console.log('connectToNewUser',userId)
-   *         const call = this.peer.call(userId, stream);
-   *         const video = this.getVideo();
-   *         call.on('stream', userVideoStream => {
-   *           console.log('connectToNewUser','on','stream')
-   *           this.addVideoStream(video, userVideoStream)
-   *         });
-   *         call.on('close', () => {
-   *           video.remove()
-   *         })
-   *
-   *         this.peers[userId] = call
-   */
-
-  /**
-   * peer = new Peer(
-   *   {
-   *     host: 'yourPersonalGitPodKey.gitpod.io',
-   *     port: '443',
-   *     path: '/',
-   *     secure: true
-   *   });
-   */
-
-  /**
-   * Error: Could not get an ID from the server. If you passed in a 'path' to your self-hosted PeerServer,
-   * you'll also need to pass in that same path when creating a new Peer
-   */
-
   useEffect(() => {
-    // () VIDEO ADDING Version 4.5
-    const addRemoteStreams = (peerId, video) => {
-      /*console.log("ADDING STREAMS");
-      console.log(peerId);*/
-      const remoteStreamsCopy = remoteStreams;
-      remoteStreamsCopy[peerId] = video;
-      //console.log(remoteStreamsCopy);
-      setRemoteStreams(Object.assign({}, remoteStreamsCopy));
-    }
-
     // Getting local streams, existing players within room call new player, new player accept incoming call from others
     navigator.mediaDevices.getUserMedia({video: true, audio: true})
       .then(stream => {
@@ -285,7 +184,7 @@ const MultiCommunication = () => {
           console.log(`Initiating CALL ==== MyID is => ${peer.id} \n CallerId is => ${otherPeerId}`);
           const call = peer.call(otherPeerId, stream);
           call.on('stream', stream => {
-            addRemoteStreams(call.peer, stream);
+            addRemoteStream(call.peer, stream);
           })
         });
 
@@ -294,12 +193,34 @@ const MultiCommunication = () => {
           console.log(`Intercepting CALL ==== MyID is => ${peer.id} \n CallerId is => ${call.peer}`);
           call.answer(stream);
           call.on('stream', stream => {
-            addRemoteStreams(call.peer, stream);
+            addRemoteStream(call.peer, stream);
           })
+        });
+
+        // Listen for any player leaving the game and then updating the rest of the players in the game room
+        socket.on("lost-player", (incomingUpdate) => {
+          updateChatHistory(incomingUpdate);
         });
       })
       .catch(err => console.log(err));
   }, [userId]);
+
+  // () removeStream adding/removing 4.5
+  const addRemoteStream = (peerId, video) => {
+    console.log("ADDING STREAM");
+    console.log(peerId);
+    const remoteStreamsCopy = remoteStreams;
+    remoteStreamsCopy[peerId] = video;
+    //console.log(remoteStreamsCopy);
+    setRemoteStreams(Object.assign({}, remoteStreamsCopy));
+  }
+  const removeRemoteStream = (peerId) => {
+    console.log("Removing STREAM");
+    console.log(peerId);
+    const remoteStreamsCopy = remoteStreams;
+    delete remoteStreamsCopy[peerId];
+    setRemoteStreams(Object.assign({}, remoteStreamsCopy));
+  }
 
   // Dummy effect to check if all streams are stored. stores playerNum - 1(sender)
   useEffect(() => {
