@@ -2,6 +2,8 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server } from 'socket.io';
+import { PeerServer } from 'peer';
+const peerServer = PeerServer({ port: 3002, path: '/flash-trivia' });
 
 const app = express();
 app.use(cors());
@@ -48,6 +50,7 @@ io.on('connection', (socket) => {
       "userName": userName,
       "userMsg": userMsg
     });
+    socket.to(userRoom).emit('meet-up', userId);
 
     // Send message to every player including the sender in the room
     socket.on("chat-message", (playerPostedChat) => {
@@ -59,8 +62,9 @@ io.on('connection', (socket) => {
     });
 
     // Sending peer id and other meta info to others in the room so one/one connection can be established with each
-    socket.on("meet-up", () => {
-      io.to(userRoom).emit("meet-up", userId);  // Currently Emittin to every person in the room including the send???? io.to/io.in
+    socket.on("meet-up", (peerId) => {
+      console.log(peerId);
+      io.to(userRoom).emit("meet-up", peerId);  // Currently Emittin to every person in the room including the send???? io.to/io.in
     });
 
     // Inform the other players in the game room that a player has left

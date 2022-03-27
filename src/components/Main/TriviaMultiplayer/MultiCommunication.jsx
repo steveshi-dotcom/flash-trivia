@@ -168,55 +168,133 @@ const MultiCommunication = () => {
 
 
   // VIDEO PART ---->
-  const peer = new Peer(userId);
-  const [othersStream, setOthersStream] = useState({});
-  const dummyRef = useRef(null);
-  useEffect(() => {
-    const appendOtherStream = (otherId, otherStream) => {
-      console.log(`Within performPeerCall ----> ${otherStream}`);
-      const othersStreamCopy = othersStream;
-      othersStreamCopy[otherId] = otherStream;
-      setOthersStream(Object.assign({}, othersStreamCopy));
-    }
-    const performPeerCall = (id) => {
-      navigator.mediaDevices.getUserMedia({video: true, audio: true})
-        .then(stream => {
-          console.log(`Within performPeerCall ---->`);
-          console.log(stream);
-          let videoCall = peer.call(id, stream);
-          videoCall.on('call', peerStream => {
-            appendOtherStream(id, peerStream);
-          })
-        })
-        .catch(err => console.log(err));
-    }
-    peer.on('call', call => {
-      console.log("GETTING CALL....");
-      navigator.mediaDevices.getUserMedia({video: true, audio: true})
-        .then(stream => {
-          call.answer(stream);
-          call.on('stream', othersStream => {
-            appendOtherStream(call.peer, othersStream);
-          })
-        })
-        .catch(err => console.log(err));
-    });
+  const [remoteStreams, setRemoteStreams] = useState({});
+  /**       ??Asynchronocity issue??
+   * const appendOtherStream = (otherId, otherStream) => {
+   *       console.log(`Within performPeerCall ----> ${otherStream}`);
+   *       const othersStreamCopy = othersStream;
+   *       othersStreamCopy[otherId] = otherStream;
+   *       setOthersStream(Object.assign({}, othersStreamCopy));
+   *     }
+   *     const performPeerCall = (id) => {
+   *       navigator.mediaDevices.getUserMedia({video: true, audio: true})
+   *         .then(stream => {
+   *           console.log(`Within performPeerCall ---->`);
+   *           console.log(stream);
+   *           let videoCall = peer.call(id, stream);
+   *           videoCall.on('call', peerStream => {
+   *             appendOtherStream(id, peerStream);
+   *           })
+   *         })
+   *         .catch(err => console.log(err));
+   *     }
+   *     peer.on('call', call => {
+   *       console.log("GETTING CALL....");
+   *       navigator.mediaDevices.getUserMedia({video: true, audio: true})
+   *         .then(stream => {
+   *           call.answer(stream);
+   *           call.on('stream', othersStream => {
+   *             appendOtherStream(call.peer, othersStream);
+   *           })
+   *         })
+   *         .catch(err => console.log(err));
+   *     });
+   *
+   *     socket.on('meet-up', (peerId) => {
+   *       console.log(peerId);
+   *       performPeerCall(peerId);
+   *     });
+   *     peer.on('open', (id) => {
+   *       console.log(id);
+   *     })
+   *     socket.emit('meet-up');
+   */
 
-    socket.on('meet-up', (peerId) => {
-      console.log(peerId);
-      performPeerCall(peerId);
-    });
-    peer.on('open', (id) => {
-      console.log(id);
-    })
-    socket.emit('meet-up');
-  }, [userName, userId]);
+  /** 'Can't load metadata, video === null???
+   *  addVideoStream(video, stream) {
+   *         video.srcObject = stream
+   *         video.addEventListener('loadedmetadata', () => {
+   *           video.play()
+   *         })
+   *         this.videoGrid.append(video)
+   *     }
+   *
+   *     getVideo(){
+   *         const myVideo = document.createElement('video');
+   *         return myVideo;
+   *     }
+   *     connectToNewUser(userId, stream) {
+   *         console.log('connectToNewUser',userId)
+   *         const call = this.peer.call(userId, stream);
+   *         const video = this.getVideo();
+   *         call.on('stream', userVideoStream => {
+   *           console.log('connectToNewUser','on','stream')
+   *           this.addVideoStream(video, userVideoStream)
+   *         });
+   *         call.on('close', () => {
+   *           video.remove()
+   *         })
+   *
+   *         this.peers[userId] = call
+   */
+
+  /**
+   * peer = new Peer(
+   *   {
+   *     host: 'yourPersonalGitPodKey.gitpod.io',
+   *     port: '443',
+   *     path: '/',
+   *     secure: true
+   *   });
+   */
+
+  /**
+   * Error: Could not get an ID from the server. If you passed in a 'path' to your self-hosted PeerServer,
+   * you'll also need to pass in that same path when creating a new Peer
+   */
+
+  useEffect(() => {
+
+    // () VID VID VID VID VID
+    const addRemoteStreams = (peerId, video) => {
+      const remoteStreamsCopy = remoteStreams;
+      remoteStreamsCopy[peerId] = video;
+      setRemoteStreams(Object.assign({}, remoteStreamsCopy));
+    }
+
+    navigator.mediaDevices.getUserMedia({video: true, audio: true})
+      .then(stream => {
+        const peer = new Peer(userId, {
+          host: 'localhost',
+          port: 3002,
+          path: '/flash-trivia'
+        });
+        peer.on('open',id => {
+          console.log(id);
+        })
+
+        socket.on('meet-up', otherPeerId => {
+          console.log("CALLING A PEER");
+          console.log(`My id is => ${peer.id} and calling this id => ${otherPeerId}`);
+          peer.call(otherPeerId, stream);
+        })
+
+        peer.on('call', call => {
+          console.log("ANSWERING A CALLLLLLLLL");
+          console.log(`My id is => ${peer.id} and getting call from this id => ${call.peer}`);
+          call.answer(stream);
+          call.on('stream', stream => {
+            addRemoteStreams(stream.id, stream);
+          })
+        })
+      })
+      .catch(err => console.log(err));
+  }, [userId]);
 
   // Render the lower right chat function on main page
   return(
     <div>
       <VideoRootContainer>
-        <VideoHolder1 src={dummyRef} />
       </VideoRootContainer>
       <ChatRootContainer>
         <ChatHistoryContainer>
