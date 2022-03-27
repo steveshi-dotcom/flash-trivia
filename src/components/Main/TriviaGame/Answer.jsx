@@ -32,6 +32,7 @@ const ChoiceFour = styled(Choice)`
 // Current choice for the question displayed
 // props:: qCorrect, qIncorrect
 const Answer = (props) => {
+  console.log(props.qCorrect);
 
   // Randomly order the answer
   const triviaOptions = [props.qCorrect, ...props.qIncorrect]

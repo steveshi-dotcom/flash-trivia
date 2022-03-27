@@ -5,6 +5,8 @@ import Question from './TriviaGame/Question.jsx';
 import Answer from './TriviaGame/Answer.jsx';
 import rightAnswer from './imgs/rightMeme.jpeg';
 import wrongAnswer from './imgs/wrongMeme.jpeg';
+import {createSearchParams, useNavigate} from "react-router-dom";
+import {resultUrl} from "../../App.js";
 
 // Properties of each question from OpenTrivia API
 const tResponse = 'response_code';  // Response of API request
@@ -25,8 +27,13 @@ export const TriviaGameContainer = styled.div`
   padding: 0 0 5% 0;
 `
 
+export const searchScoreParam = 'score';
+
 // Question Queue to track the question when the user starts playing the game.
 const TriviaGame = (props) => {
+  // navigation function use to navigate through pages
+  const navigate = useNavigate();
+
   // States of the TriviaGame Function
   const [loading, setLoading] = useState(true);
   const [userDifficulty, setUserDifficulty] = useState(props.userDifficulty);
@@ -39,12 +46,12 @@ const TriviaGame = (props) => {
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
-    const openTrivia_api_call = await fetch(`https://opentdb.com/api.php?amount=50&difficulty=${userDifficulty}&type=multiple`)
-    const openTrivia_api_data = await openTrivia_api_call.json();
-    if (openTrivia_api_data[tResponse] !== 0) { // When the api_call failed to send any question send an error
+    const openTrivia_call = await fetch(`https://opentdb.com/api.php?amount=50&difficulty=${userDifficulty}&type=multiple`)
+    const openTrivia_data = await openTrivia_call.json();
+    if (openTrivia_data[tResponse] !== 0) { // When the api_call failed to send any question send an error
       alert("Oops 401 Error occurred, please try again later.");
     }
-    await setTriviaQueue(openTrivia_api_data.results);
+    await setTriviaQueue(openTrivia_data.results);
 
     // Load up the rendering of the question after triviaQueues finish up fetching the question
     setTimeout(() => {
@@ -55,7 +62,7 @@ const TriviaGame = (props) => {
   // New round of trivia game, only started on the first round or every new round
   useEffect(() => {
     setUserDifficulty(props.userDifficulty);
-    getTriviaQuestion();
+    getTriviaQuestion().then(res => console.log("BEEP BEEP BOP, Finished loading up the questions."));
     setQuestionNum(0);
     setUserPoints(0);
     runTimer.current = 0;
@@ -65,11 +72,9 @@ const TriviaGame = (props) => {
   // Add up points for the user, and move on to the next question, go to results when finished
   const handlePoints = (e) => {
     if (e === 1) {
-      console.log("right answer");
       setUserPoints(userPoints + 2);
       setMemeTime({"display": true, "type": 1, "unknownMeme": sendUserTheirGift(1)})
     } else {
-      console.log("wrong answer");
       setMemeTime({"display": true, "type": 0,  "unknownMeme": sendUserTheirGift(0)})
     }
     // Consider whether to move on to the next question or that finish up the game when it reaches the maximum
@@ -93,9 +98,13 @@ const TriviaGame = (props) => {
   // where the user can either laugh about the good game 🙂
   // or cry on their stupidity😞
   const finishCurrentRound = () => {
-    console.log("All question answered");
     setTriviaRound(triviaRound + 1);
-    /** TODO Go to result page, leaving the main page*/
+    navigate({
+      pathname: resultUrl,
+      search: createSearchParams([
+        [searchScoreParam, userPoints]
+      ]).toString()
+    });
   }
 
   // Render Trivia Game (Left Section of Main)

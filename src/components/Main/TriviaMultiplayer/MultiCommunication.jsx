@@ -132,7 +132,7 @@ const MultiCommunication = () => {
       updateChatHistory(newPlayerData);
     });
 
-    socket.on("old-player", (oldPlayerData) => {
+    socket.on('old-player', (oldPlayerData) => {
       console.log("Informing the others that an old player has left.");
       updateChatHistory(oldPlayerData);
       removeRemoteStream(oldPlayerData["userId"]);
