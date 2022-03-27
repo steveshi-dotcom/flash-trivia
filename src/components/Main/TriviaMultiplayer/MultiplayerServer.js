@@ -60,7 +60,6 @@ io.on('connection', (socket) => {
 
     // Sending peer id and other meta info to others in the room so one/one connection can be established with each
     socket.on("meet-up", () => {
-      console.log("Emitting peer info to other players in the room." + userRoom);
       io.to(userRoom).emit("meet-up", userId);  // Currently Emittin to every person in the room including the send???? io.to/io.in
     });
 

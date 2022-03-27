@@ -166,61 +166,57 @@ const MultiCommunication = () => {
     });
   }
 
+
   // VIDEO PART ---->
-  const [remoteStream, setRemoteStream] = useState({});
+  const peer = new Peer(userId);
+  const [othersStream, setOthersStream] = useState({});
+  const dummyRef = useRef(null);
   useEffect(() => {
-    let peer = new Peer(userId);
-  //const [localStream, setLocalStream] = useState('');
-  //const dummyVidRef = useRef(null);
-    // Send peer id to other players in the room to establish connection with them
-    socket.emit('meet-up');
-
-    // Listen for new peer connection and attempt to make video call with them
-    socket.on('meet-up', otherPeerId => {
-      if (otherPeerId !== peer.id) {
-        console.log(otherPeerId);
-        navigator.mediaDevices.getUserMedia({video: true, audio: true})
-          .then(stream => {
-            let vidCall = peer.call(otherPeerId, stream);
-            vidCall.on('stream', otherStream => { // Append the new player stream onto remoteStreams
-              appendNewStream(otherStream);
-            })
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      }
-    });
-
-    // Accept any incoming peer calls
-    peer.on('call', someoneCalling => {     // NEVER GETTING ANY CALLS?????
-      console.log("SomeoneCalling");
+    const appendOtherStream = (otherId, otherStream) => {
+      console.log(`Within performPeerCall ----> ${otherStream}`);
+      const othersStreamCopy = othersStream;
+      othersStreamCopy[otherId] = otherStream;
+      setOthersStream(Object.assign({}, othersStreamCopy));
+    }
+    const performPeerCall = (id) => {
       navigator.mediaDevices.getUserMedia({video: true, audio: true})
         .then(stream => {
-          someoneCalling.answer(stream);
-          someoneCalling.on('stream', stream => {
-            appendNewStream(stream);
+          console.log(`Within performPeerCall ---->`);
+          console.log(stream);
+          let videoCall = peer.call(id, stream);
+          videoCall.on('call', peerStream => {
+            appendOtherStream(id, peerStream);
           })
         })
-        .catch(error => {
-          console.log(error);
-        });
+        .catch(err => console.log(err));
+    }
+    peer.on('call', call => {
+      console.log("GETTING CALL....");
+      navigator.mediaDevices.getUserMedia({video: true, audio: true})
+        .then(stream => {
+          call.answer(stream);
+          call.on('stream', othersStream => {
+            appendOtherStream(call.peer, othersStream);
+          })
+        })
+        .catch(err => console.log(err));
     });
-  }, []);
 
-  // Append other player streams to the videoStreams
-  const appendNewStream = (newStream) => {
-    const remoteStreamCopy = remoteStream;
-    remoteStreamCopy.push(newStream);
-    setRemoteStream(remoteStreamCopy);
-  }
+    socket.on('meet-up', (peerId) => {
+      console.log(peerId);
+      performPeerCall(peerId);
+    });
+    peer.on('open', (id) => {
+      console.log(id);
+    })
+    socket.emit('meet-up');
+  }, [userName, userId]);
 
-  console.log(remoteStream);
   // Render the lower right chat function on main page
   return(
     <div>
       <VideoRootContainer>
-
+        <VideoHolder1 src={dummyRef} />
       </VideoRootContainer>
       <ChatRootContainer>
         <ChatHistoryContainer>
