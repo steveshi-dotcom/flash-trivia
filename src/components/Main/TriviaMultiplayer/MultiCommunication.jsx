@@ -167,11 +167,11 @@ const MultiCommunication = () => {
   }
 
   // VIDEO PART ---->
-  let peer = new Peer(userId);
-  //const [localStream, setLocalStream] = useState('');
-  const [remoteStream, setRemoteStream] = useState([]);
-  //const dummyVidRef = useRef(null);
+  const [remoteStream, setRemoteStream] = useState({});
   useEffect(() => {
+    let peer = new Peer(userId);
+  //const [localStream, setLocalStream] = useState('');
+  //const dummyVidRef = useRef(null);
     // Send peer id to other players in the room to establish connection with them
     socket.emit('meet-up');
 
@@ -215,22 +215,12 @@ const MultiCommunication = () => {
     setRemoteStream(remoteStreamCopy);
   }
 
-  // 少了几个。放一些音乐-》 浪子闲话： 花瞳
-  const displayUnavailablePlayer = () => {
-    let needed = 4 - remoteStream.length;
-    if (needed !== 0) {
-      return <VideoHolder1 src={"https://www.youtube.com/embed/1VdoMsLY4Z4"} />
-    }
-  }
-
-  console.log(remoteStream.length);
+  console.log(remoteStream);
   // Render the lower right chat function on main page
   return(
     <div>
       <VideoRootContainer>
-        {remoteStream.map((curr, ind) => {
-          return <VideoHolder1 src={curr} key={ind} />
-        })}
+
       </VideoRootContainer>
       <ChatRootContainer>
         <ChatHistoryContainer>
