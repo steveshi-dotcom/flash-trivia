@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import Peer from 'peerjs';
 import socketIOClient from 'socket.io-client';
 
+import Video from "./Video.jsx";
+
 const socket = socketIOClient(`http://localhost:3001`, {secure: false});
 
 // ----styled components----
@@ -82,15 +84,7 @@ const VideoRootContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   padding: 0;
 `
-const VideoHolder1 = styled.video`
-  width: 20vw;
-  height: 25vh;
-  display: flex;
-  margin: .25vh;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-`
+
 
 // MultiCommunication part of the Main where player can communicate with four other player via video/chat
 const MultiCommunication = () => {
@@ -163,9 +157,9 @@ const MultiCommunication = () => {
     socket.on("lost-player", (incomingUpdate) => {
       console.log(incomingUpdate);
       updateChatHistory(incomingUpdate);
+
     });
   }
-
 
   // VIDEO PART ---->
   // C1: When a player joins, send peerInfo to others. Other call this new peer and add incoming streams to remote
@@ -176,6 +170,7 @@ const MultiCommunication = () => {
 
   // Stores remote streams of all other-player
   const [remoteStreams, setRemoteStreams] = useState({});
+  const videoRef = useRef(undefined);
   /**       ??Asynchronocity issue??
    * const appendOtherStream = (otherId, otherStream) => {
    *       console.log(`Within performPeerCall ----> ${otherStream}`);
@@ -311,11 +306,15 @@ const MultiCommunication = () => {
   useEffect(() => {
     console.log(remoteStreams); // Theortically should store all other streams beside the player.
   }, [remoteStreams]);
-  // Render the lower right chat function on main page
+
+  // Render the right-hand side: video/chat function
   return(
     <div>
       <VideoRootContainer>
-
+        {Object.keys(remoteStreams).map((curr, ind) => {
+          const currStream = remoteStreams[curr];
+          return <Video stream={currStream} key={ind} />
+        })}
       </VideoRootContainer>
       <ChatRootContainer>
         <ChatHistoryContainer>
