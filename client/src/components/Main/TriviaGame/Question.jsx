@@ -63,7 +63,7 @@ const Question = (props) => {
   return(
     <div>
         <QuestionContainer>
-          <TriviaQuestion>{currNumber}) {currQuestion}</TriviaQuestion> {/*TODO possible coloring of the qType category*/}
+          <TriviaQuestion>{currNumber}) {currQuestion}</TriviaQuestion>
           {timeLeft > 10 ?
             (<TriviaTimeLeft>{timeLeft}</TriviaTimeLeft>) : (<TriviaTimeLeftPressure>{timeLeft}</TriviaTimeLeftPressure>)
           }
