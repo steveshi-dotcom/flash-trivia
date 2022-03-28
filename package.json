@@ -1,0 +1,20 @@
+{
+  "name": "flash-trivia",
+  "version": "1.0.0",
+  "description": "## Introduction Exactly what the name describe, this is a quick single page Trivia Web application that enable you to play a game of trivia. Have a go at it while waiting for someone, or when you just finished a homework and need to get your mind of things, or simply when you have nothing else to do. <br> A placeholder for the webpage demo when finished :)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steveshi-dotcom/flash-trivia.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/steveshi-dotcom/flash-trivia/issues"
+  },
+  "homepage": "https://github.com/steveshi-dotcom/flash-trivia#readme"
+}
