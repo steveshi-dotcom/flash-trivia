@@ -9,7 +9,7 @@ import socketIOClient from 'socket.io-client';
 
 import Video from "./Video.jsx";
 
-const socket = socketIOClient(`http://localhost:3001`, {secure: false});
+export const socket = socketIOClient(`http://localhost:3001`, {secure: false});
 
 // ----styled components----
 /** CHAT */

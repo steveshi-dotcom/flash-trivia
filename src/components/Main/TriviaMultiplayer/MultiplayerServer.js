@@ -90,6 +90,9 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on("Hello", hello => {
+    console.log(hello);
+  })
   //------------------------------------------------------
   socket.on('disconnect', (reason) => {
     console.log(`A disconnected user: ${socket.id}`);

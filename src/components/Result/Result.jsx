@@ -7,18 +7,24 @@ import {searchNameParam, searchRoomParam} from "../Start/HomePage.jsx";
 import Answer from "../Main/TriviaGame/Answer.jsx";
 
 // styled components
+const ResultContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`
 const ScoreBoard = styled.h1`
   font-size: 3.5em;
   font-weight: bold;
 `
 const AnswerBoard = styled.div`
-  display: flex;
   background: white;
-  justify-content: center;
-  align-items: center;
-  width: 10vw;
+  font-size: 1.5em;
 `
-const InvidualAnswers = styled.p`
+const T_Question = styled.text`
+  
+`
+const T_Answer = styled.text`
 
 `
 
@@ -32,12 +38,12 @@ const Result = () => {
   }, [playerLocation]);
 
   return(
-    <div style={{alignItems: "center", justifyContent: "center"}}>
+    <ResultContainer>
       <ScoreBoard>Score: {displayScore}%</ScoreBoard>
       <AnswerBoard>
-        <InvidualAnswers>asfd</InvidualAnswers>
+        <T_Question>How much does an elephant weigh on average?</T_Question><T_Answer>1 pound</T_Answer>
       </AnswerBoard>
-    </div>
+    </ResultContainer>
   )
 }
 
