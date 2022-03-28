@@ -15,7 +15,7 @@ const io = new Server(server, {
   }
 });
 
-const port = 3001;
+const PORT = process.env.PORT || 3001;
 let users = [];     // Keep track of all users
 
 const disconnectDuplicate = (newUserId) => {
@@ -96,6 +96,6 @@ io.on('connection', (socket) => {
 });
 
 // Listen on the port
-server.listen(port, () => {
+server.listen(PORT, () => {
   console.log("Listening on the server.");
 });
