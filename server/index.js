@@ -16,7 +16,7 @@ const io = new Server(server, {
 });
 
 const PORT = process.env.PORT || 3001;
-let users = [];     // Keep track of all user
+let users = [];     // Keep track of all users
 
 const disconnectDuplicate = (newUserId) => {
   const usersCopy = users.filter(curr => {
