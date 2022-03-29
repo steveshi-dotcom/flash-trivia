@@ -64,6 +64,7 @@ const InsertChatInput = styled.input` // Text-input to type up chat
   margin: 0;
 `
 const InsertChatBtn = styled.button` // Send a event to add chat to ChatHistoryContainer
+  font-size: 10%;
   cursor: pointer;
   width: 2vw;
   height: 4.35vh;

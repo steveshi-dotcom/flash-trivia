@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import GameLoading from "./TriviaGame/GameLoading.jsx";
 import Question from './TriviaGame/Question.jsx';
 import Answer from './TriviaGame/Answer.jsx';
-import rightAnswer from './imgs/rightMeme.jpeg';
-import wrongAnswer from './imgs/wrongMeme.jpeg';
 import {createSearchParams, useNavigate} from "react-router-dom";
 import {resultUrl} from "../../App.js";
 
@@ -18,9 +16,8 @@ const tIncorrect = 'incorrect_answers';
 // Styled Components
 export const TriviaGameContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   text-align: center;
   width: 60%;
   height: 99%;
@@ -41,7 +38,6 @@ const TriviaGame = (props) => {
   const [triviaQueue, setTriviaQueue] = useState([]);
   const [questionNum, setQuestionNum] = useState(0);
   const [userPoints, setUserPoints] = useState(0);
-  const [memeTime, setMemeTime] = useState({"display": false});
   const runTimer = useRef(0);
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
@@ -56,7 +52,7 @@ const TriviaGame = (props) => {
     // Load up the rendering of the question after triviaQueues finish up fetching the question
     setTimeout(() => {
       setLoading(false);
-    }, 1); // Allow the user to look at the puppy pic a bit longer :)
+    }, 5000); // Allow the user to look at the puppy pic a bit longer :)
   }
 
   // New round of trivia game, only started on the first round or every new round
@@ -73,9 +69,7 @@ const TriviaGame = (props) => {
   const handlePoints = (e) => {
     if (e === 1) {
       setUserPoints(userPoints + 2);
-      setMemeTime({"display": true, "type": 1, "unknownMeme": sendUserTheirGift(1)})
     } else {
-      setMemeTime({"display": true, "type": 0,  "unknownMeme": sendUserTheirGift(0)})
     }
     // Consider whether to move on to the next question or that finish up the game when it reaches the maximum
     if (questionNum < 49) {
@@ -85,18 +79,9 @@ const TriviaGame = (props) => {
     }
   }
 
-  // Send the user a meme of the result of what they picked (right/wrong), option to move on or a timer??
-  const sendUserTheirGift = async(e) => {
-    if (e === 1) {
-      return <img src={rightAnswer} alt={"right-answer"} />;
-    } else {
-      return <img src={wrongAnswer} alt={"wrong-answer"} />
-    }
-  }
-
   // Finish the current round and move on to the result page
-  // where the user can either laugh about the good game 🙂
-  // or cry on their stupidity😞
+  // where the user can view their current score as well as
+  // look at the answers to the questions
   const finishCurrentRound = () => {
     setTriviaRound(triviaRound + 1);
     navigate({

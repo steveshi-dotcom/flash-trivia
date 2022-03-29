@@ -4,6 +4,7 @@ import puppyWaitEye from '../imgs/TriviaGameWait.jpg'
 
 // Style component
 const LoadingContainer = styled.img`
+  margin: 10px;
   width: 100%;
   height: 100%;
 `
@@ -17,7 +18,7 @@ const GameLoading = () => {
   return(
     <div>
       <LoadingContainer src={puppyWaitEye}/>
-      <LoadingText>Beep Bop Bop, fetching questions, please wait patiently...</LoadingText>
+      <LoadingText>Beep Beep Bop Bop, fetching questions, please wait patiently...</LoadingText>
     </div>
   )
 }

@@ -7,19 +7,15 @@ import TriviaMultiplayer from "./TriviaMultiplayer";
 // Style Component
 const MainContainer = styled.div`
   display: flex;
-  flex-direction: row;
-  margin-top: 10vh;
+  margin-top: 5vh;
 `
 
 const Main = (props) => {
   return(
-    <div>
-      <MainContainer>
-        <TriviaGame userDifficulty={props.userDifficulty}/>
-        <TriviaMultiplayer />
-      </MainContainer>
-    </div>
+    <MainContainer>
+      <TriviaGame userDifficulty={props.userDifficulty}/>
+      <TriviaMultiplayer />
+    </MainContainer>
   )
 }
-
 export default Main;

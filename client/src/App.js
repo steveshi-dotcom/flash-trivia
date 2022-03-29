@@ -11,9 +11,6 @@ export const mainUrl = "/main";
 export const resultUrl = "/result";
 
 function App() {    /*TODO Resize the elements so that the view on the phone would have the video ono the bottom */
-  /*
-  http://localhost:3000
-  */
   return (
     <div className="App">
       <BrowserRouter>

@@ -32,8 +32,6 @@ const ChoiceFour = styled(Choice)`
 // Current choice for the question displayed
 // props:: qCorrect, qIncorrect
 const Answer = (props) => {
-  console.log(props.qCorrect);
-
   // Randomly order the answer
   const triviaOptions = [props.qCorrect, ...props.qIncorrect]
     .map(curr => {
@@ -54,7 +52,7 @@ const Answer = (props) => {
     }
   }
 
-  // Render the four different answer choices
+  // Render the four different answer choices for the player
   return(
     <ChoiceContainer>
       <ChoiceOne value={triviaOptions[0]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceOne>

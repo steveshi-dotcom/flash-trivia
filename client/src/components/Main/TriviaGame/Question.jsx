@@ -69,7 +69,7 @@ const Question = (props) => {
           }
         </QuestionContainer>
       <PupHolder src={happyPuppy}/>
-      {/*TODO Possible Images generated from ai base on qQues keywords OpenAI??? */}
+      {/*TODO Possible Images generated from AI base on qQues keywords --> OpenAI??? */}
     </div>
   )
 }
