@@ -177,9 +177,21 @@ const MultiCommunication = () => {
       .then(stream => {
         // Make new peer object with unique uuid and at server localhost:3002/flash-trivia or whatever in the future
         const peer = new Peer(userId, {
-          host: 'localhost',
-          port: 3003,
-          path: '/flash-trivia'
+          'iceServers': [
+            {url: 'stun:stun.l.google.com:19302'},
+            {url: 'turn:numb.viagenie.ca:3478', credential: 'muazkh', username: 'web...@live.com'},
+            {url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'web...@live.com'},
+            {
+              url: 'turn:192.158.29.39:3478?transport=udp',
+              credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+              username: '28224511:1379330808'
+            },
+            {
+              url: 'turn:192.158.29.39:3478?transport=tcp',
+              credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+              username: '28224511:1379330808'
+            }
+          ]
         });
 
         // Check Peer is on, if not it is not connected to the server and dataConnection won't transport mediaStream
