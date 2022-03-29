@@ -176,6 +176,7 @@ const MultiCommunication = () => {
       .then(stream => {
         // Make new peer object with unique uuid and at server localhost:3002/flash-trivia or whatever in the future
         const peer = new Peer(userId, {
+          secure: true,
           host: 'localhost',
           port: 3002,
           path: '/flash-trivia'
