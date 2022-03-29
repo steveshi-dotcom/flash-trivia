@@ -9,7 +9,7 @@ import socketIOClient from 'socket.io-client';
 
 import Video from "./Video.jsx";
 
-export const socket = socketIOClient(`http://localhost:4001`, {secure: false});
+export const socket = socketIOClient(`https://flash-trivia-v1-server.herokuapp.com/`, {secure: false});
 
 // ----styled components----
 /** CHAT */
