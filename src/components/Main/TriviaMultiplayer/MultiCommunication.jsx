@@ -182,7 +182,7 @@ const MultiCommunication = () => {
           path: '/flash-trivia'
         });
           /*{
-          'iceServers': [
+          'iceServers':  [
             {url: 'stun:stun.l.google.com:19302'},
             {url: 'turn:numb.viagenie.ca:3478', credential: 'muazkh', username: 'web...@live.com'},
             {url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'web...@live.com'},
