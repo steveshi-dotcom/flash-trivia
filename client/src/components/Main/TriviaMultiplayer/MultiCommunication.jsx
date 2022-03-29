@@ -176,9 +176,9 @@ const MultiCommunication = () => {
       .then(stream => {
         // Make new peer object with unique uuid and at server localhost:3002/flash-trivia or whatever in the future
         const peer = new Peer(userId, {
-          secure: true,
-          host: 'flash-trivia-v1.herokuapp.com',
-          port: process.env.PORT || 3002
+          host: 'localhost',
+          port: 3002,
+          path: '/flash-trivia'
         });
 
         // Check Peer is on, if not it is not connected to the server and dataConnection won't transport mediaStream
