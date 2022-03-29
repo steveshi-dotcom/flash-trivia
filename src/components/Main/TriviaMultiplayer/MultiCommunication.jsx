@@ -196,7 +196,8 @@ const MultiCommunication = () => {
 
         // Check Peer is on, if not it is not connected to the server and dataConnection won't transport mediaStream
         peer.on('open',id => {
-          //console.log(id);
+          console.log("Peer is open");
+          console.log(id);
         });
 
         // Listen for meet-up event, then call other peer using the id. Add their responding stream to remoteStream
