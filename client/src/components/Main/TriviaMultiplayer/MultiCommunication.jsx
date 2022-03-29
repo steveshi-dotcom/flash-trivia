@@ -9,7 +9,7 @@ import socketIOClient from 'socket.io-client';
 
 import Video from "./Video.jsx";
 
-export const socket = socketIOClient(`http://localhost:3001`, {secure: false});
+export const socket = socketIOClient(`http://localhost:4001`, {secure: false});
 
 // ----styled components----
 /** CHAT */
@@ -178,7 +178,7 @@ const MultiCommunication = () => {
         // Make new peer object with unique uuid and at server localhost:3002/flash-trivia or whatever in the future
         const peer = new Peer(userId, {
           host: 'localhost',
-          port: 3002,
+          port: 3003,
           path: '/flash-trivia'
         });
 
