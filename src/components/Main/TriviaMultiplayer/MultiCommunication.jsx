@@ -9,7 +9,7 @@ import socketIOClient from 'socket.io-client';
 
 import Video from "./Video.jsx";
 
-const socket = socketIOClient(`https://flash-trivia-v1-server.herokuapp.com/`, {secure: false});
+export const socket = socketIOClient(`https://flash-trivia-v1-server.herokuapp.com/`, {secure: false});
 
 // ----styled components----
 /** CHAT */
@@ -176,17 +176,8 @@ const MultiCommunication = () => {
     navigator.mediaDevices.getUserMedia({video: true, audio: true})
       .then(stream => {
         // Make new peer object with unique uuid and at server localhost:3002/flash-trivia or whatever in the future
-        const peer = new Peer(userId/*, {
-          host: 'localhost',
-          port: 3003,
-          path: '/flash-trivia'
-        }*//*{
-          host: 'flash-trivia-v1.herokuapp.com',
-          port: 3003,
-          path: '/flash-trivia'
-        });*/
-          /*{
-          'iceServers':  [
+        const peer = new Peer(userId, {
+          'iceServers': [
             {url: 'stun:stun.l.google.com:19302'},
             {url: 'turn:numb.viagenie.ca:3478', credential: 'muazkh', username: 'web...@live.com'},
             {url: 'turn:numb.viagenie.ca', credential: 'muazkh', username: 'web...@live.com'},
@@ -201,7 +192,7 @@ const MultiCommunication = () => {
               username: '28224511:1379330808'
             }
           ]
-        }*/);
+        });
 
         // Check Peer is on, if not it is not connected to the server and dataConnection won't transport mediaStream
         peer.on('open',id => {
