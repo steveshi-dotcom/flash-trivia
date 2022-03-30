@@ -1,10 +1,14 @@
 import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
+import { useLocation } from "react-router-dom";
+import qs from 'qs';
+import { searchNameParam, searchRoomParam } from "../../Start/HomePage.jsx";
 import GameLoading from "./TriviaGame/GameLoading.jsx";
 import Question from './TriviaGame/Question.jsx';
 import Answer from './TriviaGame/Answer.jsx';
 import {createSearchParams, useNavigate} from "react-router-dom";
 import {resultUrl} from "../../App.js";
+import socket from "./TriviaMultiplayer/socket.js";
 
 // Properties of each question from OpenTrivia API
 const tResponse = 'response_code';  // Response of API request
@@ -40,6 +44,7 @@ const TriviaGame = (props) => {
   const [questionNum, setQuestionNum] = useState(0);
   const [userPoints, setUserPoints] = useState(0);
   const runTimer = useRef(0);
+  const playerLocation = useLocation();
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
@@ -49,6 +54,11 @@ const TriviaGame = (props) => {
       alert("Oops 401 Error occurred, please try again later.");
     }
     await setTriviaQueue(openTrivia_data.results);
+
+    const playerInput = qs.parse(playerLocation.search.slice(1)); // playerLocation.search: ?name=steve&room=1234
+    /*socket.emit()
+    setUserName(playerInput[searchNameParam]);
+    setUserRoom(playerInput[searchRoomParam]);*/
 
     // Load up the rendering of the question after triviaQueues finish up fetching the question
     setTimeout(() => {

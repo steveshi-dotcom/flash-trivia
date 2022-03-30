@@ -5,7 +5,7 @@ import qs from 'qs';
 import { searchNameParam, searchRoomParam } from "../../Start/HomePage.jsx";
 import { v4 as uuidv4 } from 'uuid';
 import Peer from 'peerjs';
-import socketIOClient from 'socket.io-client';
+import socket from "./socket.js";
 
 import Video from "./Video.jsx";
 
@@ -85,10 +85,7 @@ const VideoRootContainer = styled.div`
 
 
 // MultiCommunication part of the Main where player can communicate with four other player via video/chat
-const MultiCommunication = (props) => {
-
-    //socketIOClient(`https://flash-trivia-v1-server.herokuapp.com/`, {secure: false});
-
+const MultiCommunication = () => {
 
   // unique uuid for each player, use for keeping track of users in socket for chat and peer identification for video
   const [userId, setUserId] = useState(`${uuidv4()}`);
@@ -118,7 +115,7 @@ const MultiCommunication = (props) => {
     setUserRoom(playerInput[searchRoomParam]);
 
     // emit an 'join-game' event that will place the player in their room with their team
-    props.socket.emit("join-game", {
+    socket.emit("join-game", {
       userId: userId,
       userName: playerInput[searchNameParam],
       userRoom: playerInput[searchRoomParam],
@@ -130,12 +127,12 @@ const MultiCommunication = (props) => {
     });
 
     // Listen for 'new-player' event signifying a new player joining their game and send an update to chatHistory
-    props.socket.on("new-player", (newPlayerData) => {
+    socket.on("new-player", (newPlayerData) => {
       console.log("Informing the others that an new player has joined.");
       updateChatHistory(newPlayerData);
     });
 
-    props.socket.on('old-player', (oldPlayerData) => {
+    socket.on('old-player', (oldPlayerData) => {
       console.log("Informing the others that an old player has left.");
       updateChatHistory(oldPlayerData);
       removeRemoteStream(oldPlayerData["userId"]);
@@ -152,11 +149,11 @@ const MultiCommunication = (props) => {
     if (userMsg.current.length !== 0) {
       postedChat['userMsg'] = userMsg.current;
     }
-    props.socket.emit("chat-message", postedChat);
+    socket.emit("chat-message", postedChat);
     document.getElementById("chatInput").value = '';
 
     // Listen for any incoming messages from other players
-    props.socket.on("chat-message", (incomingChat) => {
+    socket.on("chat-message", (incomingChat) => {
       console.log(`I have received an chat event from the server at ${new Date().getMilliseconds()}-->${incomingChat.userMsg}`);
       //const newIndividualChat = { userName: incomingChat['userName'], userMsg: incomingChat['userMsg'] }
       updateChatHistory(incomingChat);
@@ -203,7 +200,7 @@ const MultiCommunication = (props) => {
         });
 
         // Listen for meet-up event, then call other peer using the id. Add their responding stream to remoteStream
-        props.socket.on('meet-up', otherPeerId => {
+        socket.on('meet-up', otherPeerId => {
           // console.log(`Initiating CALL ==== MyID is => ${peer.id} \n CallerId is => ${otherPeerId}`);
           const call = peer.call(otherPeerId, stream);
           call.on('stream', stream => {
@@ -243,7 +240,7 @@ const MultiCommunication = (props) => {
   }, [remoteStreams]);
 
   // Listen for any player leaving the game and then updating the rest of the players in the game room
-  props.socket.on("lost-player", (incomingUpdate) => {
+  socket.on("lost-player", (incomingUpdate) => {
     updateChatHistory(incomingUpdate);
     removeRemoteStream(incomingUpdate['userId']);
   });
