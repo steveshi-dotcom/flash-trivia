@@ -9,7 +9,6 @@ import socketIOClient from 'socket.io-client';
 
 import Video from "./Video.jsx";
 
-//const socket = socketIOClient(`https://flash-trivia-v1-server.herokuapp.com/`, {secure: false});
 const socket = socketIOClient(`https://flash-trivia-v1-server.herokuapp.com/`, {secure: false});
 
 // ----styled components----
@@ -177,7 +176,7 @@ const MultiCommunication = () => {
     navigator.mediaDevices.getUserMedia({video: true, audio: true})
       .then(stream => {
         // Make new peer object with unique uuid and at server localhost:3002/flash-trivia or whatever in the future
-        const peer = new Peer(userId /*{
+        const peer = new Peer(userId/*, {
           host: 'localhost',
           port: 3003,
           path: '/flash-trivia'
