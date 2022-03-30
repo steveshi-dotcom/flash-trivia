@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import { useLocation } from "react-router-dom";
 import qs from 'qs';
-import { searchNameParam, searchRoomParam } from "../../Start/HomePage.jsx";
+//import { searchNameParam, searchRoomParam } from "./";
 import GameLoading from "./TriviaGame/GameLoading.jsx";
 import Question from './TriviaGame/Question.jsx';
 import Answer from './TriviaGame/Answer.jsx';
