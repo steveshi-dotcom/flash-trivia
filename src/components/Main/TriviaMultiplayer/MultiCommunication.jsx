@@ -9,7 +9,7 @@ import socket from "./socket.js";
 
 import Video from "./Video.jsx";
 
-// ----styled components----
+// ----styled components---
 /** CHAT */
 const ChatRootContainer = styled.div` // Root of the Chat rendering where clients send msg to communicate with others
   background-color: black;
