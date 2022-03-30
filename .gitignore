@@ -109,3 +109,6 @@ Thumbs.db
 !.gitignore
 !.nvmrc
 !.phpcs.xml.dist
+
+# Ignore build
+build/

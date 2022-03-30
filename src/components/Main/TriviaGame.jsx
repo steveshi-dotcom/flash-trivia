@@ -28,6 +28,7 @@ export const searchScoreParam = 'score';
 
 // Question Queue to track the question when the user starts playing the game.
 const TriviaGame = (props) => {
+
   // navigation function use to navigate through pages
   const navigate = useNavigate();
 
