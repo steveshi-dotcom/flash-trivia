@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import { useLocation } from "react-router-dom";
 import qs from 'qs';
-//import { searchNameParam, searchRoomParam } from "./";
+import { searchNameParam, searchRoomParam } from "../Start/HomePage.jsx";
 import GameLoading from "./TriviaGame/GameLoading.jsx";
 import Question from './TriviaGame/Question.jsx';
 import Answer from './TriviaGame/Answer.jsx';
@@ -53,17 +53,28 @@ const TriviaGame = (props) => {
     if (openTrivia_data[tResponse] !== 0) { // When the api_call failed to send any question send an error
       alert("Oops 401 Error occurred, please try again later.");
     }
-    await setTriviaQueue(openTrivia_data.results);
 
     const playerInput = qs.parse(playerLocation.search.slice(1)); // playerLocation.search: ?name=steve&room=1234
-    /*socket.emit()
-    setUserName(playerInput[searchNameParam]);
-    setUserRoom(playerInput[searchRoomParam]);*/
+    const name = playerInput[searchNameParam];
+    const room = playerInput[searchRoomParam];
+
+    const dataChunk = {
+      room: room,
+      questions: openTrivia_data.results
+    }
+    socket.emit('existing-questions', dataChunk);
+    let proposedQuestions = openTrivia_data.results;
+    socket.on('existing-questions', dataChunk => {
+      console.log(dataChunk[0]);
+      proposedQuestions = dataChunk[0];
+    });
+
+    await setTriviaQueue(proposedQuestions);
 
     // Load up the rendering of the question after triviaQueues finish up fetching the question
     setTimeout(() => {
       setLoading(false);
-    }, 5000); // Allow the user to look at the puppy pic a bit longer :)
+    }, 1); // Allow the user to look at the puppy pic a bit longer :)
   }
 
   // New round of trivia game, only started on the first round or every new round
