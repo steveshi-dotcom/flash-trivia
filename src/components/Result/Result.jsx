@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {createSearchParams, useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import styled from 'styled-components';
 import GameLoading from "../Main/TriviaGame/GameLoading.jsx";
 import he from 'he';
@@ -9,7 +9,6 @@ import {searchRoomParam} from "../Start/HomePage.jsx";
 import {homeUrl} from "../../App.js";
 
 import socket from "../Main/TriviaMultiplayer/socket.js";
-
 
 // styled components
 const ResultContainer = styled.div`
@@ -79,7 +78,7 @@ const Result = () => {
     socket.emit('obtain-answer-board', playerOutput[searchRoomParam]);
     socket.on('obtain-answer-board', answerBoard => {
       setAnswerBoard(answerBoard);
-      console.log(answerBoard);
+      //console.log(answerBoard);
       setLoading(false);
     });
   }, [playerLocation]);
@@ -91,7 +90,7 @@ const Result = () => {
       margin-bottom: 2vh;
     `
     return(
-      <QuestionContainer>
+      <QuestionContainer key={index}>
         <Question>#{index + 1} {he.decode(i_question)}</Question>
         <Correct>{he.decode(i_correct)}</Correct>
       </QuestionContainer>
@@ -111,7 +110,6 @@ const Result = () => {
             {answerBoard.map((curr, ind) => {
               return showIndividualQuestion(curr['question'], curr['correct_answer'], ind);
             })}
-
           </AnswerBoard>
           <BackHomeBtn onClick={backHome}>Go Home</BackHomeBtn>
         </div>

@@ -48,7 +48,7 @@ const TriviaGame = (props) => {
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
-    const qCount = 10;
+    const qCount = 50;
     const url = `https://opentdb.com/api.php?amount=${qCount}&difficulty=${userDifficulty}&type=multiple`
     const openTrivia_call = await fetch(url);
     const openTrivia_data = await openTrivia_call.json();

@@ -235,7 +235,7 @@ const MultiCommunication = () => {
 
   // Dummy effect to check if all streams are stored. stores playerNum - 1(sender)
   useEffect(() => {
-    console.log(remoteStreams); // theoretically should store all other streams beside the player within remoteStreams
+    //console.log(remoteStreams); // theoretically should store all other streams beside the player within remoteStreams
   }, [remoteStreams]);
 
   // Listen for any player leaving the game and then updating the rest of the players in the game room
