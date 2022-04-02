@@ -78,7 +78,6 @@ const Result = () => {
     socket.emit('obtain-answer-board', playerOutput[searchRoomParam]);
     socket.on('obtain-answer-board', answerBoard => {
       setAnswerBoard(answerBoard);
-      //console.log(answerBoard);
       setLoading(false);
     });
   }, [playerLocation]);
