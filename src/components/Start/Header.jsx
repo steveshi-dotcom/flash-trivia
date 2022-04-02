@@ -9,10 +9,9 @@ const TriviaTitle = styled.h1`
     font-family: 'Rancho', cursive;
     text-align: center;
     color: #E55B13;
-    margin: 6% 0 0 0;
+    margin: 5% 0 0 0;
   `
 
-// Header as (Flash Trivia) -> ? icon??
 const Header = () => {
   return(
     <div>

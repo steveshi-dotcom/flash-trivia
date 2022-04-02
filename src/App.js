@@ -10,7 +10,7 @@ export const homeUrl = "/home";
 export const mainUrl = "/main";
 export const resultUrl = "/result";
 
-function App() {    /*TODO Resize the elements so that the view on the phone would have the video ono the bottom */
+function App() {
   return (
     <div className="App">
       <BrowserRouter>

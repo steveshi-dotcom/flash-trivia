@@ -48,25 +48,27 @@ const TriviaGame = (props) => {
 
   // Async function to return an array of 50 trivia question from OpenTrivia API, a new batch of question every call
   const getTriviaQuestion = async() => {
-    const openTrivia_call = await fetch(`https://opentdb.com/api.php?amount=50&difficulty=${userDifficulty}&type=multiple`)
+    const qCount = 10;
+    const url = `https://opentdb.com/api.php?amount=${qCount}&difficulty=${userDifficulty}&type=multiple`
+    const openTrivia_call = await fetch(url);
     const openTrivia_data = await openTrivia_call.json();
-    if (openTrivia_data[tResponse] !== 0) { // When the api_call failed to send any question send an error
+
+    // When the api_call failed to send any question send an error
+    if (openTrivia_data[tResponse] !== 0) {
       alert("Oops 401 Error occurred, please try again later.");
     }
 
     const playerInput = qs.parse(playerLocation.search.slice(1)); // playerLocation.search: ?name=steve&room=1234
-    const name = playerInput[searchNameParam];
     const room = playerInput[searchRoomParam];
 
-    const dataChunk = {
+    const triviaInfo = {
       room: room,
       questions: openTrivia_data.results
     }
-    socket.emit('existing-questions', dataChunk);
+    socket.emit('existing-questions', triviaInfo);
     let proposedQuestions = openTrivia_data.results;
-    socket.on('existing-questions', dataChunk => {
-      console.log(dataChunk[0]);
-      setTriviaQueue(dataChunk[0]);
+    socket.on('existing-questions', triviaInfo => {
+      setTriviaQueue(triviaInfo[0]);
     });
 
     await setTriviaQueue(proposedQuestions);
@@ -74,17 +76,16 @@ const TriviaGame = (props) => {
     // Load up the rendering of the question after triviaQueues finish up fetching the question
     setTimeout(() => {
       setLoading(false);
-    }, 1); // Allow the user to look at the puppy pic a bit longer :)
+    }, 1000);
   }
 
   // New round of trivia game, only started on the first round or every new round
   useEffect(() => {
     setUserDifficulty(props.userDifficulty);
-    getTriviaQuestion().then(res => console.log("BEEP BEEP BOP, Finished loading up the questions."));
+    getTriviaQuestion();
     setQuestionNum(0);
     setUserPoints(0);
     runTimer.current = 0;
-    // eslint-disable-next-line
   }, [triviaRound]);
 
   // Add up points for the user, and move on to the next question, go to results when finished
@@ -93,7 +94,7 @@ const TriviaGame = (props) => {
       setUserPoints(userPoints + 2);
     }
     // Consider whether to move on to the next question or that finish up the game when it reaches the maximum
-    if (questionNum < 49) {
+    if (questionNum < triviaQueue.length - 1) {
       setQuestionNum(questionNum + 1);
     } else {
       finishCurrentRound();
@@ -105,15 +106,20 @@ const TriviaGame = (props) => {
   // look at the answers to the questions
   const finishCurrentRound = () => {
     setTriviaRound(triviaRound + 1);
+
+    // Send the player to the result page with search param of ?room=1234&score=4325
+    const playerInput = qs.parse(playerLocation.search.slice(1)); // playerLocation.search: ?name=steve&room=1234
+    const room = playerInput[searchRoomParam];
     navigate({
       pathname: resultUrl,
       search: createSearchParams([
+        [searchRoomParam, room],
         [searchScoreParam, userPoints]
       ]).toString()
     });
   }
 
-  // Render Trivia Game (Left Section of Main)
+  // Render Trivia Game (Left Section of Main), show loading screen if questions is still processing
   return(
     <TriviaGameContainer>
       {!loading ? (

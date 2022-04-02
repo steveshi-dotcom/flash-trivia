@@ -97,7 +97,7 @@ const HomePage = () => {
           <UserInput type={"text"} onChange={e => setName(e.target.value)} placeHolder={"Hello"}/>
         </InformationContainer>
         <InformationContainer>
-          <UserQuestion>Room#:</UserQuestion>
+          <UserQuestion>Room #:</UserQuestion>
           <UserInput type={"text"} onChange={e => setRoom(e.target.value)}/>
         </InformationContainer>
         <JoinBtn onClick={startTriviaSession}>Start</JoinBtn>

@@ -1,4 +1,3 @@
-import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import TriviaGame from "./TriviaGame";
 import TriviaMultiplayer from "./TriviaMultiplayer";

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import happyPuppy from '../imgs/cute-pup.jpg';
 import he from 'he';
@@ -69,7 +69,6 @@ const Question = (props) => {
           }
         </QuestionContainer>
       <PupHolder src={happyPuppy}/>
-      {/*TODO Possible Images generated from AI base on qQues keywords --> OpenAI??? */}
     </div>
   )
 }

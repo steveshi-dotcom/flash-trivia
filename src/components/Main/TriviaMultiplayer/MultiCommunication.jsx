@@ -128,12 +128,12 @@ const MultiCommunication = () => {
 
     // Listen for 'new-player' event signifying a new player joining their game and send an update to chatHistory
     socket.on("new-player", (newPlayerData) => {
-      console.log("Informing the others that an new player has joined.");
+      //console.log("Informing the others that an new player has joined.");
       updateChatHistory(newPlayerData);
     });
 
     socket.on('old-player', (oldPlayerData) => {
-      console.log("Informing the others that an old player has left.");
+      //console.log("Informing the others that an old player has left.");
       updateChatHistory(oldPlayerData);
       removeRemoteStream(oldPlayerData["userId"]);
     })
@@ -154,7 +154,7 @@ const MultiCommunication = () => {
 
     // Listen for any incoming messages from other players
     socket.on("chat-message", (incomingChat) => {
-      console.log(`I have received an chat event from the server at ${new Date().getMilliseconds()}-->${incomingChat.userMsg}`);
+      //console.log(`I have received an chat event from the server at ${new Date().getMilliseconds()}-->${incomingChat.userMsg}`);
       updateChatHistory(incomingChat);
     });
   }

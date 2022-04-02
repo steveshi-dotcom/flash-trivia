@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import he from 'he';
-import socket from "../TriviaMultiplayer/socket.js";
 
 // Style Components
 const ChoiceContainer = styled.div`
@@ -56,12 +55,19 @@ const Answer = (props) => {
   // Render the four different answer choices for the player
   return(
     <ChoiceContainer>
-      <ChoiceOne value={triviaOptions[0]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[0])}</ChoiceOne>
-      <ChoiceTwo value={triviaOptions[1]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[1])}</ChoiceTwo>
-      <ChoiceThree value={triviaOptions[2]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[2])}</ChoiceThree>
-      <ChoiceFour value={triviaOptions[3]} onClick={(e) => props.qResult(checkAnswer(e))}>{he.decode(triviaOptions[3])}</ChoiceFour>
+      <ChoiceOne value={triviaOptions[0]} onClick={(e) => props.qResult(checkAnswer(e))}>
+        {he.decode(triviaOptions[0])}
+      </ChoiceOne>
+      <ChoiceTwo value={triviaOptions[1]} onClick={(e) => props.qResult(checkAnswer(e))}>
+        {he.decode(triviaOptions[1])}
+      </ChoiceTwo>
+      <ChoiceThree value={triviaOptions[2]} onClick={(e) => props.qResult(checkAnswer(e))}>
+        {he.decode(triviaOptions[2])}
+      </ChoiceThree>
+      <ChoiceFour value={triviaOptions[3]} onClick={(e) => props.qResult(checkAnswer(e))}>
+        {he.decode(triviaOptions[3])}
+      </ChoiceFour>
     </ChoiceContainer>
   )
 }
-
 export default Answer;

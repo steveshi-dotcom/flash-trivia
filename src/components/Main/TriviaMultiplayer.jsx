@@ -5,7 +5,6 @@ import MultiCommunication from "./TriviaMultiplayer/MultiCommunication.jsx";
 
 // style components
 const TriviaMultiplayerContainer = styled(TriviaGameContainer)`
-  // TriviaGameContainer of 60% on the left side, TriviaMultiplayerContainer will be on the right at 40%
   width: 45%;
 `
 
