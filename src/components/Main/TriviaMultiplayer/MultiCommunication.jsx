@@ -155,7 +155,6 @@ const MultiCommunication = () => {
     // Listen for any incoming messages from other players
     socket.on("chat-message", (incomingChat) => {
       console.log(`I have received an chat event from the server at ${new Date().getMilliseconds()}-->${incomingChat.userMsg}`);
-      //const newIndividualChat = { userName: incomingChat['userName'], userMsg: incomingChat['userMsg'] }
       updateChatHistory(incomingChat);
     });
   }

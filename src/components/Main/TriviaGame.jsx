@@ -66,7 +66,7 @@ const TriviaGame = (props) => {
     let proposedQuestions = openTrivia_data.results;
     socket.on('existing-questions', dataChunk => {
       console.log(dataChunk[0]);
-      proposedQuestions = dataChunk[0];
+      setTriviaQueue(dataChunk[0]);
     });
 
     await setTriviaQueue(proposedQuestions);
@@ -91,7 +91,6 @@ const TriviaGame = (props) => {
   const handlePoints = (e) => {
     if (e === 1) {
       setUserPoints(userPoints + 2);
-    } else {
     }
     // Consider whether to move on to the next question or that finish up the game when it reaches the maximum
     if (questionNum < 49) {

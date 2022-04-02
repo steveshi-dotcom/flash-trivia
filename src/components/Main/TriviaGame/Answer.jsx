@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import he from 'he';
+import socket from "../TriviaMultiplayer/socket.js";
 
 // Style Components
 const ChoiceContainer = styled.div`
