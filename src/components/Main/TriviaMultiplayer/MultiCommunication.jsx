@@ -174,7 +174,7 @@ const MultiCommunication = () => {
     navigator.mediaDevices.getUserMedia({video: true, audio: true})
       .then(stream => {
         // Make new peer object with unique uuid and at server localhost:3002/flash-trivia or whatever in the future
-        const peer = new Peer(ourUserId, {
+        const peer = new Peer(userId, {
           host: "web-video-chat-peer-server-v2.herokuapp.com",
           port: 443,
           secure: true,
